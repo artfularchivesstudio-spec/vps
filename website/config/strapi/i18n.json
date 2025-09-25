@@ -1,0 +1,50 @@
+{
+  "locales": [
+    {
+      "code": "en",
+      "name": "English",
+      "iso": "en-US"
+    },
+    {
+      "code": "es",
+      "name": "Español",
+      "iso": "es-ES"
+    },
+    {
+      "code": "hi",
+      "name": "हिन्दी",
+      "iso": "hi-IN"
+    }
+  ],
+  "defaultLocale": "en",
+  "settings": {
+    "fallbackLocale": "en",
+    "localeStructure": "/:locale",
+    "forceLocale": false,
+    "saveEmptyLocales": false,
+    "localized": true
+  },
+  "contentTypes": {
+    "api::blog_post.blog_post": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "api::category.category": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "api::tag.tag": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}

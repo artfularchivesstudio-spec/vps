@@ -1,0 +1,66 @@
+{
+  "kind": "component",
+  "collectionName": "components_seo_open_graphs",
+  "componentName": "open-graph",
+  "info": {
+    "displayName": "Open Graph",
+    "description": "Open Graph social media metadata"
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": false,
+      "maxLength": 60,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "description": {
+      "type": "text",
+      "required": false,
+      "maxLength": 160,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "url": {
+      "type": "string",
+      "required": false,
+      "regex": "^(https?:\\/\\/)?([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?$"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "website",
+        "article",
+        "profile",
+        "video",
+        "image"
+      ],
+      "default": "website",
+      "required": false
+    },
+    "siteName": {
+      "type": "string",
+      "required": false,
+      "maxLength": 100,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}

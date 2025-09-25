@@ -1,0 +1,1408 @@
+openapi: 3.1.0
+info:
+  title: Artful Archives Studio External API
+  description: |
+    External API for Artful Archives Studio content management system.
+    
+    This API enables AI assistants and external tools to manage blog posts, 
+    analyze artwork, generate audio content, and handle media assets through 
+    a conversational interface.
+    
+    ## Authentication
+    All requests require an API key passed in the Authorization header:
+    ```
+    Authorization: Bearer your-api-key-here
+    ```
+    
+    ## Rate Limiting
+    - Default: 100 requests per minute per API key
+    - Rate limit headers are included in all responses
+    - Exceeding limits returns 429 status code
+    
+    ## Scopes
+    API keys can have different scopes to control access:
+    - `posts:read` - Read blog posts
+    - `posts:write` - Create and update blog posts
+    - `posts:delete` - Delete blog posts  
+    - `posts:publish` - Publish and unpublish posts
+    - `media:read` - Read media assets
+    - `media:write` - Upload and manage media
+    - `media:delete` - Delete media assets
+    - `ai:analyze` - Use AI analysis endpoints
+    - `ai:generate-audio` - Generate audio content
+    - `admin:full` - Full administrative access
+  version: 1.0.0
+  contact:
+    name: Artful Archives Studio API
+    url: https://artfularchivesstudio.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://artfularchivesstudio.com/api/external
+    description: Production server
+  - url: http://localhost:3000/api/external  
+    description: Development server
+
+security:
+  - ApiKeyAuth: []
+
+paths:
+  /posts:
+    get:
+      summary: List blog posts
+      description: Retrieve a paginated list of blog posts with optional filtering
+      tags:
+        - Posts
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number (starts at 1)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Number of posts per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: status
+          in: query
+          description: Filter by post status
+          schema:
+            type: string
+            enum: [draft, published, archived]
+        - name: search
+          in: query
+          description: Search in title and content
+          schema:
+            type: string
+        - name: origin
+          in: query
+          description: Filter by origin source
+          schema:
+            type: string
+            enum: [manual, openai, claude, merged, generated, uploaded]
+        - name: sort
+          in: query
+          description: Sort field
+          schema:
+            type: string
+            enum: [created_at, updated_at, published_at, title]
+            default: created_at
+        - name: order
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: List of blog posts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    post:
+      summary: Create new blog post
+      description: Create a new blog post with AI-generated or custom content
+      tags:
+        - Posts
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePostRequest'
+      responses:
+        '200':
+          description: Created blog post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /posts/{id}:
+    get:
+      summary: Get specific blog post
+      description: Retrieve a specific blog post by ID
+      tags:
+        - Posts
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Post ID
+          schema:
+            type: string
+            format: uuid
+        - name: include_audio
+          in: query
+          description: Include associated audio data
+          schema:
+            type: boolean
+            default: false
+        - name: include_analysis
+          in: query
+          description: Include AI analysis data
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Blog post details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    put:
+      summary: Update blog post
+      description: Update an existing blog post
+      tags:
+        - Posts
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Post ID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePostRequest'
+      responses:
+        '200':
+          description: Updated blog post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    delete:
+      summary: Delete blog post
+      description: Delete a blog post and associated media
+      tags:
+        - Posts
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Post ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Post deletion confirmation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /posts/{id}/publish:
+    post:
+      summary: Publish blog post
+      description: Publish a draft blog post
+      tags:
+        - Posts
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Post ID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublishPostRequest'
+      responses:
+        '200':
+          description: Published post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublishPostResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    delete:
+      summary: Unpublish blog post
+      description: Unpublish a published blog post (set to draft)
+      tags:
+        - Posts
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Post ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Unpublished post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /ai/analyze-image:
+    post:
+      summary: Analyze artwork with AI
+      description: |
+        Analyze artwork images using OpenAI GPT-4 and Claude Sonnet.
+        Returns detailed analysis suitable for blog post content.
+      tags:
+        - AI
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: analysis_type
+          in: query
+          description: Type of analysis to perform
+          schema:
+            type: string
+            enum: [detailed, brief, technical, artistic, social_media]
+            default: detailed
+        - name: include_metadata
+          in: query
+          description: Include image metadata in response
+          schema:
+            type: boolean
+            default: false
+        - name: providers
+          in: query
+          description: AI providers to use (comma-separated)
+          schema:
+            type: string
+            default: "openai,claude"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnalyzeImageRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AnalyzeImageFormRequest'
+      responses:
+        '200':
+          description: AI analysis results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyzeImageResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /ai/generate-audio:
+    post:
+      summary: Generate audio from text
+      description: |
+        Generate high-quality audio narration from text using ElevenLabs or OpenAI TTS.
+        Optionally save to storage for permanent use.
+      tags:
+        - AI
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateAudioRequest'
+      responses:
+        '202':
+          description: Audio generation accepted
+          headers:
+            X-Notification-URL:
+              type: string
+              format: uri
+              example: https://api.artfularchivesstudio.com/webhooks/audio-status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  job_id:
+                    type: string
+                  status_url:
+                    type: string
+                    format: uri
+                    example: /audio-jobs/{job_id}
+                  notification_emoji:
+          type: string
+          enum: ["🔔", "📢", "🎧"]
+          default: "🔔"
+          description: "Status emoji indicator"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateAudioResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    get:
+      summary: List available voices
+      description: |
+          Returns audio job status 🎚️
+          Includes notification tracking headers
+        headers:
+          X-Notification-Sent:
+            type: boolean
+            description: "🔔 Notification dispatched status"
+      tags:
+        - AI
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: provider
+          in: query
+          description: Filter by TTS provider
+          schema:
+            type: string
+            enum: [elevenlabs, openai, all]
+            default: all
+      responses:
+        '200':
+          description: Available voices
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoicesResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /media:
+    get:
+      summary: List media assets
+      description: Retrieve a paginated list of media assets
+      tags:
+        - Media
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Number of assets per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: type
+          in: query
+          description: Filter by media type
+          schema:
+            type: string
+            enum: [image, audio, video, document]
+        - name: search
+          in: query
+          description: Search in title and description
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Filter by status
+          schema:
+            type: string
+            enum: [processing, ready, error, archived]
+      responses:
+        '200':
+          description: List of media assets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    post:
+      summary: Upload media asset
+      description: Upload a new media file (image, audio, video, or document)
+      tags:
+        - Media
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadMediaRequest'
+      responses:
+        '200':
+          description: Uploaded media asset
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaAssetResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /media/{id}:
+    get:
+      summary: Get specific media asset
+      description: Retrieve a specific media asset by ID
+      tags:
+        - Media
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Media asset ID
+          schema:
+            type: string
+            format: uuid
+        - name: include_usage
+          in: query
+          description: Include usage information
+          schema:
+            type: boolean
+            default: false
+        - name: include_metadata
+          in: query
+          description: Include detailed metadata
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Media asset details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaAssetResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    put:
+      summary: Update media asset metadata
+      description: Update title, description, tags, or status of a media asset
+      tags:
+        - Media
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Media asset ID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMediaAssetRequest'
+      responses:
+        '200':
+          description: Updated media asset
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaAssetResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    delete:
+      summary: Delete media asset
+      description: Delete a media asset and its associated file
+      tags:
+        - Media
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Media asset ID
+          schema:
+            type: string
+            format: uuid
+        - name: force
+          in: query
+          description: Force delete even if referenced by posts
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Asset deletion confirmation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteResponse'
+        '409':
+          description: Asset is in use and cannot be deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: |
+        API key authentication. Include your API key in the Authorization header:
+        `Authorization: Bearer your-api-key-here`
+
+  schemas:
+    # Base API Response
+    APIResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the request was successful
+        data:
+          type: object
+          description: Response data (present on success)
+        error:
+          type: string
+          description: Error message (present on failure)
+        meta:
+          type: object
+          description: Additional metadata
+          properties:
+            pagination:
+              $ref: '#/components/schemas/Pagination'
+            rateLimit:
+              $ref: '#/components/schemas/RateLimit'
+      required:
+        - success
+
+    # Pagination
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page number
+        limit:
+          type: integer
+          description: Items per page
+        total:
+          type: integer
+          description: Total number of items
+        totalPages:
+          type: integer
+          description: Total number of pages
+        hasNext:
+          type: boolean
+          description: Whether there is a next page
+        hasPrev:
+          type: boolean
+          description: Whether there is a previous page
+
+    # Rate Limit
+    RateLimit:
+      type: object
+      properties:
+        limit:
+          type: integer
+          description: Rate limit per minute
+        remaining:
+          type: integer
+          description: Remaining requests in current window
+        reset:
+          type: integer
+          description: Time when rate limit resets (Unix timestamp)
+
+    # Blog Post
+    BlogPost:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique post identifier
+        title:
+          type: string
+          description: Post title
+        slug:
+          type: string
+          description: URL-friendly slug
+        excerpt:
+          type: string
+          nullable: true
+          description: Short post summary
+        content:
+          type: string
+          description: Full post content
+        featured_image_url:
+          type: string
+          nullable: true
+          description: URL of featured image
+        seo_title:
+          type: string
+          nullable: true
+          description: SEO optimized title
+        seo_description:
+          type: string
+          nullable: true
+          description: SEO meta description
+        status:
+          type: string
+          enum: [draft, published, archived]
+          description: Post publication status
+        origin_source:
+          type: string
+          enum: [manual, openai, claude, merged, generated, uploaded]
+          description: How the post was created
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Publication timestamp
+        primary_audio_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: Associated audio asset ID
+        created_by:
+          type: string
+          format: uuid
+          description: Creator user ID
+        last_edited_by:
+          type: string
+          format: uuid
+          description: Last editor user ID
+        ai_analysis_openai:
+          type: string
+          nullable: true
+          description: OpenAI analysis content
+        ai_analysis_claude:
+          type: string
+          nullable: true
+          description: Claude analysis content
+        selected_ai_provider:
+          type: string
+          nullable: true
+          description: Selected AI provider
+
+    # Media Asset
+    MediaAsset:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique asset identifier
+        title:
+          type: string
+          description: Asset title
+        description:
+          type: string
+          nullable: true
+          description: Asset description
+        file_url:
+          type: string
+          format: uri
+          description: Public URL of the file
+        file_type:
+          type: string
+          enum: [image, audio, video, document]
+          description: Type of media file
+        mime_type:
+          type: string
+          description: MIME type of the file
+        file_size_bytes:
+          type: integer
+          description: File size in bytes
+        file_size_formatted:
+          type: string
+          description: Human-readable file size
+        duration_seconds:
+          type: number
+          nullable: true
+          description: Duration for audio/video files
+        duration_formatted:
+          type: string
+          nullable: true
+          description: Human-readable duration
+        width:
+          type: integer
+          nullable: true
+          description: Width for images/videos
+        height:
+          type: integer
+          nullable: true
+          description: Height for images/videos
+        origin_source:
+          type: string
+          enum: [uploaded, generated, imported]
+          description: How the asset was created
+        generation_provider:
+          type: string
+          nullable: true
+          description: AI provider used for generation
+        status:
+          type: string
+          enum: [processing, ready, error, archived]
+          description: Asset processing status
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        tags:
+          type: array
+          items:
+            type: string
+          description: Asset tags
+        public_url:
+          type: string
+          format: uri
+          description: Public access URL
+        thumbnail_url:
+          type: string
+          format: uri
+          nullable: true
+          description: Thumbnail URL (for images)
+
+    # Request/Response Schemas
+    CreatePostRequest:
+      type: object
+      required:
+        - title
+        - content
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Post title
+        content:
+          type: string
+          minLength: 1
+          description: Post content
+        slug:
+          type: string
+          maxLength: 255
+          description: Custom slug (auto-generated if not provided)
+        excerpt:
+          type: string
+          maxLength: 500
+          description: Post excerpt
+        featured_image_url:
+          type: string
+          format: uri
+          description: Featured image URL
+        seo_title:
+          type: string
+          maxLength: 255
+          description: SEO title
+        seo_description:
+          type: string
+          maxLength: 500
+          description: SEO description
+        status:
+          type: string
+          enum: [draft, published, archived]
+          default: draft
+          description: Post status
+        origin_source:
+          type: string
+          enum: [manual, openai, claude, merged, generated, uploaded]
+          default: generated
+          description: Content origin
+        publish_immediately:
+          type: boolean
+          default: false
+          description: Publish immediately if status is published
+
+    UpdatePostRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Post title
+        content:
+          type: string
+          minLength: 1
+          description: Post content
+        slug:
+          type: string
+          maxLength: 255
+          description: Post slug
+        excerpt:
+          type: string
+          maxLength: 500
+          description: Post excerpt
+        featured_image_url:
+          type: string
+          format: uri
+          description: Featured image URL
+        seo_title:
+          type: string
+          maxLength: 255
+          description: SEO title
+        seo_description:
+          type: string
+          maxLength: 500
+          description: SEO description
+        status:
+          type: string
+          enum: [draft, published, archived]
+          description: Post status
+        origin_source:
+          type: string
+          enum: [manual, openai, claude, merged, generated, uploaded]
+          description: Content origin
+
+    PublishPostRequest:
+      type: object
+      properties:
+        schedule_date:
+          type: string
+          format: date-time
+          description: Schedule publication for future date
+        social_share:
+          type: boolean
+          default: false
+          description: Share on social media
+
+    AnalyzeImageRequest:
+      type: object
+      required:
+        - image_data
+      properties:
+        image_data:
+          type: string
+          description: Base64 encoded image data
+        mime_type:
+          type: string
+          description: Image MIME type
+        analysis_type:
+          type: string
+          enum: [detailed, brief, technical, artistic, social_media]
+          default: detailed
+          description: Type of analysis
+        include_metadata:
+          type: boolean
+          default: false
+          description: Include image metadata
+        custom_prompt:
+          type: string
+          maxLength: 1000
+          description: Custom analysis prompt
+
+    AnalyzeImageFormRequest:
+      type: object
+      required:
+        - image
+      properties:
+        image:
+          type: string
+          format: binary
+          description: Image file to analyze
+
+    GenerateAudioRequest:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+          minLength: 1
+          maxLength: 5000
+          description: Text to convert to speech
+        voice_id:
+          type: string
+          default: alloy # OpenAI's default voice
+          description: Voice ID to use
+        provider:
+          type: string
+          enum: [openai, elevenlabs]
+          default: openai
+          description: TTS provider
+        voice_settings:
+          type: object
+          description: Provider-specific voice settings
+        output_format:
+          type: string
+          enum: [mp3, wav, aac]
+          default: mp3
+          description: Audio output format
+        save_to_storage:
+          type: boolean
+          default: false
+          description: Save audio to permanent storage
+        title:
+          type: string
+          maxLength: 255
+          description: Title for saved audio asset
+
+    UploadMediaRequest:
+      type: object
+      required:
+        - file
+      properties:
+        file:
+          type: string
+          format: binary
+          description: File to upload
+        title:
+          type: string
+          description: Asset title (defaults to filename)
+        description:
+          type: string
+          description: Asset description
+        tags:
+          type: string
+          description: Comma-separated tags
+
+    UpdateMediaAssetRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Asset title
+        description:
+          type: string
+          maxLength: 1000
+          description: Asset description
+        tags:
+          type: array
+          items:
+            type: string
+          description: Asset tags
+        status:
+          type: string
+          enum: [processing, ready, error, archived]
+          description: Asset status
+
+    # Response Schemas
+    PostResponse:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/BlogPost'
+
+    PostListResponse:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/BlogPost'
+
+    PublishPostResponse:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/BlogPost'
+                - type: object
+                  properties:
+                    published:
+                      type: boolean
+                    scheduled:
+                      type: boolean
+                    public_url:
+                      type: string
+                      format: uri
+                    actions_performed:
+                      type: array
+                      items:
+                        type: string
+
+    AnalyzeImageResponse:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                analysis_type:
+                  type: string
+                providers_used:
+                  type: array
+                  items:
+                    type: string
+                timestamp:
+                  type: string
+                  format: date-time
+                openai:
+                  type: object
+                  properties:
+                    content:
+                      type: string
+                    success:
+                      type: boolean
+                    error:
+                      type: string
+                claude:
+                  type: object
+                  properties:
+                    content:
+                      type: string
+                    success:
+                      type: boolean
+                    error:
+                      type: string
+                suggested_title:
+                  type: string
+                suggested_slug:
+                  type: string
+                image_metadata:
+                  type: object
+                  properties:
+                    mime_type:
+                      type: string
+                    size_estimate:
+                      type: integer
+                    analysis_timestamp:
+                      type: string
+                      format: date-time
+
+    GenerateAudioResponse:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                provider:
+                  type: string
+                voice_id:
+                  type: string
+                text_length:
+                  type: integer
+                audio_size_bytes:
+                  type: integer
+                estimated_duration_seconds:
+                  type: number
+                format:
+                  type: string
+                generation_metadata:
+                  type: object
+                generated_at:
+                  type: string
+                  format: date-time
+                audio_data:
+                  type: string
+                  description: Base64 encoded audio (if not saved to storage)
+                storage:
+                  type: object
+                  description: Storage information (if saved)
+                  properties:
+                    saved:
+                      type: boolean
+                    media_asset_id:
+                      type: string
+                      format: uuid
+                    file_url:
+                      type: string
+                      format: uri
+                    file_name:
+                      type: string
+
+    VoicesResponse:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                providers:
+                  type: array
+                  items:
+                    type: string
+                voices:
+                  type: object
+                  additionalProperties:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        gender:
+                          type: string
+                        accent:
+                          type: string
+                default_voice:
+                  type: object
+                  additionalProperties:
+                    type: string
+
+    MediaAssetResponse:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/MediaAsset'
+
+    MediaListResponse:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/MediaAsset'
+
+    DeleteResponse:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                deleted:
+                  type: boolean
+                id:
+                  type: string
+                  format: uuid
+                title:
+                  type: string
+
+    ErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/APIResponse'
+        - type: object
+          properties:
+            success:
+              type: boolean
+              enum: [false]
+            error:
+              type: string
+
+  responses:
+    Unauthorized:
+      description: Unauthorized - Invalid or missing API key
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: "Unauthorized: Invalid or missing API key"
+
+    Forbidden:
+      description: Forbidden - Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: "Forbidden: Missing required scope 'posts:write'"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: "Resource not found"
+
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: "Validation failed: title is required"
+
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: "Internal server error"
+
+tags:
+  - name: Posts
+    description: Blog post management operations
+  - name: AI
+    description: AI-powered content analysis and generation
+  - name: Media
+    description: Media asset management operations

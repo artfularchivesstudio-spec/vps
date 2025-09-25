@@ -1,0 +1,6 @@
+# Swift Package Manager
+/.build
+/Packages
+/checkouts
+/*.xcodeproj
+/project.xcworkspace 

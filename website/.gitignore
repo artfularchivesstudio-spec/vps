@@ -1,0 +1,49 @@
+# 🌌 The sacred scrolls of digital creation - what the version spirits shall not see
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# 🏗️ The foundation stones - dependencies that build our digital cathedral
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# 🧪 The testing grounds - where quality assurance dances
+/coverage
+
+# ⚛️ Next.js artifacts - the magical portals to our web realms
+/.next/
+/out/
+
+# 🎭 Production builds - the final performance of our code symphony
+/build
+
+# 🌟 Miscellaneous artifacts - the background players in our digital theater
+.DS_Store
+*.pem
+
+# 🔧 Debug chronicles - the tales of our development journey
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 🔐 Sacred secrets - the hidden chambers of our environment
+.env*.local
+
+# ☁️ Vercel deployments - the cloud chariots carrying our creations
+.vercel
+
+# 📝 TypeScript memories - the blueprints of our type-safe architecture
+*.tsbuildinfo
+next-env.d.ts
+.env
+temp_cipher/
+
+# 🧠 Cipher memory realms - the enchanted databases of thought
+memAgent/*.db
+memAgent/*.db-*
+
+# 🔑 Google Sheets credentials - the mystical keys to our data sanctuaries
+google-sheets-credentials.json
+credentials/
+
+/generated/prisma

@@ -1,0 +1,4 @@
+
+ALTER TABLE public.blog_posts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.external_api_keys ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.audio_jobs ENABLE ROW LEVEL SECURITY; 

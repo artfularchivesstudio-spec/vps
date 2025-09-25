@@ -1,0 +1,121 @@
+openapi: 3.1.0
+info:
+  title: Artful Archives Studio - Social Media Agent Actions API
+  description: |
+    📱 **AI-Powered Social Media Management Platform**
+    
+    A comprehensive API for scheduling and managing social media posts across multiple platforms,
+    enabling seamless content distribution and audience engagement.
+    
+    ## **ChatGPT Integration Guide**
+    
+    This API enables conversational social media management through ChatGPT Actions. The assistant should guide users through intuitive workflows:
+    
+    ### **Social Media Posting Workflow**
+    1. **Content Creation**: Help user craft platform-appropriate content
+    2. **Schedule Post**: Use `scheduleSocialPost` to queue content for publishing
+    3. **Confirmation**: Provide scheduling confirmation and next steps
+    
+    ### **Conversation Patterns**
+    
+    **📱 Scheduling Posts:**
+    ```
+    User: "I want to share my new blog post on social media"
+    Assistant: "I'd be happy to help you share your blog post! Which platform would you like to post to? I can help with Instagram, Twitter, TikTok, or LinkedIn."
+    User: "Let's post to Instagram"
+    Assistant: "Great choice! For Instagram, you'll want a captivating caption with relevant hashtags. Would you like me to help craft a caption, or do you already have one in mind?"
+    User: "Help me write a caption about my new watercolor painting tutorial"
+    Assistant: "How about: 'Unleash your inner artist with my latest watercolor tutorial! 🎨 Learn step-by-step techniques to create stunning landscapes in just 30 minutes. Link in bio for the full guide! #WatercolorTutorial #ArtTips #CreativeJourney'. Would you like to use this caption?"
+    User: "That's perfect, schedule it"
+    Assistant: [Calls scheduleSocialPost] "Your Instagram post has been scheduled! It will go live at the optimal time for engagement based on your audience. Would you like to schedule this content for any other platforms?"
+    ```
+    
+    ### **Key Interaction Principles**
+    - **Platform awareness**: Tailor content recommendations to each platform's best practices
+    - **Timing optimization**: Suggest optimal posting times based on audience engagement patterns
+    - **Content repurposing**: Offer to adapt content for different platforms
+    - **Handle errors gracefully**: Explain errors in user-friendly terms and suggest solutions
+  version: 1.0.0
+  contact:
+    name: Artful Archives Studio Support
+    url: https://artfularchivesstudio.com/support
+    email: support@artfularchivesstudio.com
+
+servers:
+  - url: https://tjkpliasdjpgunbhsiza.functions.supabase.co
+    description: Production Supabase Edge Functions
+
+paths:
+  /functions/v1/social-post:
+    post:
+      summary: Schedule a social media post
+      description: |
+        Queue content for publishing on specified social media platforms at optimal times.
+        
+        **ChatGPT Usage**: Use when user wants to share content on social media platforms.
+      operationId: scheduleSocialPost
+      x-openai-isConsequential: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - platform
+                - content
+              properties:
+                platform:
+                  type: string
+                  description: Target platform (ig, tiktok, x, etc.)
+                  example: "instagram"
+                content:
+                  type: string
+                  description: Caption or message
+                  example: "Check out our latest artwork! #ArtfulArchives"
+      responses:
+        "200":
+          description: Post scheduled successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Post scheduled for optimal engagement time"
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/ServerError'
+components:
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Unauthorized - Invalid or missing API key
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Internal server error

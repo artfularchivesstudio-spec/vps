@@ -1,0 +1,130 @@
+openapi: 3.1.0
+info:
+  title: Artful Archives Studio - Advertising Agent Actions API
+  description: |
+    🎯 **AI-Powered Advertising Campaign Management**
+    
+    A comprehensive API for launching and managing advertising campaigns across multiple platforms,
+    enabling targeted audience reach and optimized ad spend.
+    
+    ## **ChatGPT Integration Guide**
+    
+    This API enables conversational advertising campaign management through ChatGPT Actions. The assistant should guide users through intuitive workflows:
+    
+    ### **Advertising Campaign Workflow**
+    1. **Campaign Planning**: Help user define campaign goals, target audience, and budget
+    2. **Platform Selection**: Guide user to choose appropriate advertising platforms
+    3. **Launch Campaign**: Use `launchAdvertisingCampaign` to create and deploy the campaign
+    4. **Confirmation**: Provide campaign launch confirmation and next steps
+    
+    ### **Conversation Patterns**
+    
+    **🎯 Launching Campaigns:**
+    ```
+    User: "I need to advertise my new art collection"
+    Assistant: "I'd be happy to help you advertise your new art collection! What's your budget for this campaign?"
+    User: "About $500"
+    Assistant: "Great! With a $500 budget, we can create an effective campaign. Which platform would you prefer to advertise on? Popular options include Instagram, Facebook, Google Ads, or Pinterest."
+    User: "Let's go with Instagram"
+    Assistant: "Instagram is an excellent choice for visual art! Would you like to target a specific audience demographic, or would you prefer to optimize for broad reach?"
+    User: "Target art enthusiasts in New York"
+    Assistant: "Perfect! I'll set up an Instagram campaign targeting art enthusiasts in New York with your $500 budget. This should help drive awareness and interest in your new collection. Would you like me to launch this campaign now?"
+    User: "Yes, launch it"
+    Assistant: [Calls launchAdvertisingCampaign] "Your advertising campaign has been successfully launched on Instagram! It's targeting art enthusiasts in New York with your $500 budget. You'll start seeing impressions shortly, and I can help you monitor performance in the coming days."
+    ```
+    
+    ### **Key Interaction Principles**
+    - **Budget optimization**: Recommend allocation strategies to maximize ROI
+    - **Platform expertise**: Suggest platforms based on campaign goals and audience
+    - **Creative guidance**: Offer ad format and content recommendations
+    - **Handle errors gracefully**: Explain errors in user-friendly terms and suggest solutions
+  version: 1.0.0
+  contact:
+    name: Artful Archives Studio Support
+    url: https://artfularchivesstudio.com/support
+    email: support@artfularchivesstudio.com
+
+servers:
+  - url: https://tjkpliasdjpgunbhsiza.functions.supabase.co
+    description: Production Supabase Edge Functions
+paths:
+  /functions/v1/advertising-campaign:
+    post:
+      summary: Launch an advertising campaign
+      description: |
+        Create and deploy advertising campaigns on specified platforms with defined budget and targeting.
+        
+        **ChatGPT Usage**: Use when user wants to create and launch advertising campaigns.
+      operationId: launchAdvertisingCampaign
+      x-openai-isConsequential: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - platform
+                - budget
+              properties:
+                platform:
+                  type: string
+                  description: Target advertising platform (instagram, facebook, google, etc.)
+                  example: "instagram"
+                budget:
+                  type: number
+                  description: Campaign budget in USD
+                  example: 500
+                audience:
+                  type: string
+                  description: Target audience description
+                  example: "Art enthusiasts in New York"
+      responses:
+        "200":
+          description: Campaign launched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Campaign launched successfully"
+                  campaignId:
+                    type: string
+                    example: "camp_12345"
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/ServerError'
+components:
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Unauthorized - Invalid or missing API key
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Internal server error

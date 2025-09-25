@@ -1,0 +1,5 @@
+file_path,issue_type,claimed_language,detected_language,confidence,priority,action,estimated_cost,business_impact
+audio_samples/19587fa4-1fbf-4e4e-adbb-8bd9772aab9e_es_chunk_0.mp3,Non-English as English,spanish,en,0,MEDIUM,Update metadata only (content is English),Low (metadata update),Medium (metadata inconsistency)
+audio_samples/19587fa4-1fbf-4e4e-adbb-8bd9772aab9e_hi_full.mp3,Non-English as English,hindi,en,0,MEDIUM,Update metadata only (content is English),Low (metadata update),Medium (metadata inconsistency)
+audio_samples/19587fa4-1fbf-4e4e-adbb-8bd9772aab9e_hi_chunk_0.mp3,Non-English as English,hindi,en,0,MEDIUM,Update metadata only (content is English),Low (metadata update),Medium (metadata inconsistency)
+audio_samples/19587fa4-1fbf-4e4e-adbb-8bd9772aab9e_es_full.mp3,Non-English as English,spanish,en,0,MEDIUM,Update metadata only (content is English),Low (metadata update),Medium (metadata inconsistency)

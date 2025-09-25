@@ -1,0 +1,58 @@
+{
+  "kind": "component",
+  "componentName": "seo",
+  "info": {
+    "displayName": "SEO",
+    "description": "Search engine optimization metadata"
+  },
+  "attributes": {
+    "metaTitle": {
+      "type": "string",
+      "required": false,
+      "maxLength": 60,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "metaDescription": {
+      "type": "text",
+      "required": false,
+      "maxLength": 160,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "keywords": {
+      "type": "text",
+      "required": false,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "canonicalURL": {
+      "type": "string",
+      "required": false,
+      "regex": "^(https?:\\/\\/)?([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?$"
+    },
+    "structuredData": {
+      "type": "json",
+      "required": false
+    },
+    "openGraph": {
+      "type": "component",
+      "repeatable": false,
+      "component": "seo.open-graph"
+    },
+    "twitter": {
+      "type": "component",
+      "repeatable": false,
+      "component": "seo.twitter"
+    }
+  }
+}

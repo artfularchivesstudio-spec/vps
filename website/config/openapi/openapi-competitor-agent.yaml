@@ -1,0 +1,133 @@
+openapi: 3.1.0
+info:
+  title: Artful Archives Studio - Competitor Agent Actions API
+  description: |
+    🔍 **AI-Powered Competitor Analysis Platform**
+    
+    A comprehensive API for analyzing competitor websites and strategies,
+    enabling data-driven decision making and market positioning.
+    
+    ## **ChatGPT Integration Guide**
+    
+    This API enables conversational competitor analysis through ChatGPT Actions. The assistant should guide users through intuitive workflows:
+    
+    ### **Competitor Analysis Workflow**
+    1. **Identify Competitor**: Help user specify competitor website or business
+    2. **Analysis Request**: Use `analyzeCompetitor` to gather insights
+    3. **Insight Presentation**: Present findings in an organized, actionable format
+    4. **Strategic Recommendations**: Suggest positioning strategies based on analysis
+    
+    ### **Conversation Patterns**
+    
+    **🔍 Analyzing Competitors:**
+    ```
+    User: "I want to know more about what my competitor is doing"
+    Assistant: "I'd be happy to help you analyze a competitor! Could you share their website URL so I can gather insights for you?"
+    User: "www.artrivalgallery.com"
+    Assistant: "Thanks! I'll analyze Art Rival Gallery's website to provide you with insights about their offerings, pricing strategy, and market positioning. This will take just a moment."
+    User: "Great"
+    Assistant: [Calls analyzeCompetitor] "Based on my analysis of Art Rival Gallery, here are the key insights:
+    
+    1. **Product Focus**: They primarily showcase modern abstract art with prices ranging from $200-$5,000
+    2. **Marketing Strategy**: Heavy emphasis on artist stories and limited edition releases
+    3. **Audience Targeting**: Appears to target young urban professionals and first-time art buyers
+    4. **Competitive Advantage**: Their 'virtual gallery tour' feature provides an immersive shopping experience
+    
+    Would you like specific recommendations on how to differentiate your offerings from theirs?"
+    ```
+    
+    ### **Key Interaction Principles**
+    - **Ethical analysis**: Focus on publicly available information only
+    - **Actionable insights**: Provide practical, strategic recommendations
+    - **Comparative context**: Frame findings in relation to user's business
+    - **Handle errors gracefully**: Explain errors in user-friendly terms and suggest solutions
+  version: 1.0.0
+  contact:
+    name: Artful Archives Studio Support
+    url: https://artfularchivesstudio.com/support
+    email: support@artfularchivesstudio.com
+
+servers:
+  - url: https://tjkpliasdjpgunbhsiza.functions.supabase.co
+    description: Production Supabase Edge Functions
+paths:
+  /functions/v1/competitor-insights:
+    post:
+      summary: Analyze competitor website
+      description: |
+        Gather insights about competitor websites including offerings, pricing, and positioning.
+        
+        **ChatGPT Usage**: Use when user wants to analyze a competitor's online presence.
+      operationId: analyzeCompetitor
+      x-openai-isConsequential: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - url
+              properties:
+                url:
+                  type: string
+                  description: Competitor website URL
+                  example: "https://www.artrivalgallery.com"
+      responses:
+        "200":
+          description: Analysis completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  insights:
+                    type: object
+                    properties:
+                      offerings:
+                        type: string
+                        example: "Modern abstract art, limited editions, prints"
+                      pricing:
+                        type: string
+                        example: "$200-$5,000 range, tiered pricing model"
+                      positioning:
+                        type: string
+                        example: "Premium yet accessible, focus on emerging artists"
+                      uniqueFeatures:
+                        type: string
+                        example: "Virtual gallery tours, artist interviews"
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/ServerError'
+components:
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Unauthorized - Invalid or missing API key
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Internal server error

@@ -1,0 +1,23 @@
+{
+  "total_fixes": 4,
+  "successful_fixes": 4,
+  "failed_fixes": 0,
+  "fixes_applied": [
+    {
+      "file_path": "audio_samples/19587fa4-1fbf-4e4e-adbb-8bd9772aab9e_es_chunk_0.mp3",
+      "status": "success"
+    },
+    {
+      "file_path": "audio_samples/19587fa4-1fbf-4e4e-adbb-8bd9772aab9e_hi_full.mp3",
+      "status": "success"
+    },
+    {
+      "file_path": "audio_samples/19587fa4-1fbf-4e4e-adbb-8bd9772aab9e_hi_chunk_0.mp3",
+      "status": "success"
+    },
+    {
+      "file_path": "audio_samples/19587fa4-1fbf-4e4e-adbb-8bd9772aab9e_es_full.mp3",
+      "status": "success"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+[
+  {
+    "id": "ma-001",
+    "created_at": "2024-07-11T16:05:00+00:00",
+    "blog_post_id": 1,
+    "asset_type": "featured_image",
+    "asset_url": "https://example.com/images/schrodingers-cat.jpg",
+    "mime_type": "image/jpeg",
+    "file_name": "schrodingers-cat.jpg"
+  },
+  {
+    "id": "ma-002",
+    "created_at": "2024-07-11T16:05:10+00:00",
+    "blog_post_id": 1,
+    "asset_type": "image",
+    "asset_url": "https://example.com/images/cat-in-box.png",
+    "mime_type": "image/png",
+    "file_name": "cat-in-box.png"
+  },
+  {
+    "id": "ma-003",
+    "created_at": "2024-07-12T11:20:00+00:00",
+    "blog_post_id": 2,
+    "asset_type": "featured_image",
+    "asset_url": "https://example.com/images/dark-matter.jpg",
+    "mime_type": "image/jpeg",
+    "file_name": "dark-matter.jpg"
+  },
+  {
+    "id": "ma-004",
+    "created_at": "2024-07-13T09:45:00+00:00",
+    "blog_post_id": 3,
+    "asset_type": "featured_image",
+    "asset_url": "https://example.com/images/string-theory.jpg",
+    "mime_type": "image/jpeg",
+    "file_name": "string-theory.jpg"
+  },
+  {
+    "id": "ma-005",
+    "created_at": "2024-07-14T14:04:00+00:00",
+    "blog_post_id": 4,
+    "asset_type": "featured_image",
+    "asset_url": "https://example.com/images/black-hole.jpg",
+    "mime_type": "image/jpeg",
+    "file_name": "black-hole.jpg"
+  },
+  {
+    "id": "ma-006",
+    "created_at": "2024-07-15T18:30:00+00:00",
+    "blog_post_id": 5,
+    "asset_type": "featured_image",
+    "asset_url": "https://example.com/images/history-of-ai.jpg",
+    "mime_type": "image/jpeg",
+    "file_name": "history-of-ai.jpg"
+  }
+]

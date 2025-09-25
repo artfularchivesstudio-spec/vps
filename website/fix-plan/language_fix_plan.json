@@ -1,0 +1,60 @@
+{
+  "summary": {
+    "total_files_analyzed": 10,
+    "total_issues_found": 4,
+    "high_priority_issues": 0,
+    "medium_priority_issues": 4,
+    "low_priority_issues": 0,
+    "estimated_fix_time_hours": 2.0,
+    "generated_at": "2025-09-08T19:55:24.296188"
+  },
+  "phases": [
+    {
+      "phase": "Phase 1: High Priority Fixes",
+      "description": "Fix English files that are actually other languages",
+      "items": 0,
+      "estimated_time": "0 hours",
+      "actions": [
+        "Identify all English audio files that are actually Hindi/Spanish",
+        "Regenerate audio using correct TTS service",
+        "Update database metadata",
+        "Verify transcription matches claimed language"
+      ]
+    },
+    {
+      "phase": "Phase 2: Medium Priority Fixes",
+      "description": "Fix metadata for files that are actually English",
+      "items": 4,
+      "estimated_time": "2.0 hours",
+      "actions": [
+        "Update language metadata in database",
+        "Verify file paths and naming conventions",
+        "Update any related UI components"
+      ]
+    },
+    {
+      "phase": "Phase 3: Low Priority Fixes",
+      "description": "Review and fix remaining mismatches",
+      "items": 0,
+      "estimated_time": "0 hours",
+      "actions": [
+        "Manual review of each case",
+        "Determine if regeneration or metadata update is needed",
+        "Document edge cases for future prevention"
+      ]
+    }
+  ],
+  "recommendations": [
+    "Implement language detection in TTS generation pipeline",
+    "Add validation checks before saving audio files",
+    "Create automated tests for language accuracy",
+    "Set up monitoring for language mismatch detection",
+    "Consider using multiple TTS providers for verification"
+  ],
+  "risks": [
+    "High volume of audio regeneration may impact performance",
+    "TTS service costs may increase during fix period",
+    "Potential temporary inconsistency during updates",
+    "Need to coordinate with content team for verification"
+  ]
+}

@@ -1,0 +1,167 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CreatePostWizard snapshots > renders title and HUD 1`] = `
+<DocumentFragment>
+  <div
+    class="fixed top-4 right-4 z-40 flex flex-col gap-2"
+  >
+    <div
+      class="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800"
+    >
+      🌐 Online
+    </div>
+    <button
+      class="px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 hover:bg-purple-200 transition-colors"
+      title="Keyboard shortcuts (?)"
+    >
+      ⌨️ Shortcuts
+    </button>
+  </div>
+  <div
+    class="max-w-4xl mx-auto py-8"
+    data-testid="wizard-container"
+  >
+    <h1
+      class="text-3xl font-bold text-center mb-8"
+    >
+      Create New Post
+    </h1>
+    <div
+      class="mb-4 flex items-center justify-center gap-3 text-xs text-gray-700"
+    >
+      <div
+        class="px-2 py-1 rounded bg-indigo-100"
+      >
+        🖼️ Upload
+      </div>
+      <div>
+        ➡️
+      </div>
+      <div
+        class="px-2 py-1 rounded bg-gray-100"
+      >
+        📝 Review
+      </div>
+      <div>
+        ➡️
+      </div>
+      <div
+        class="px-2 py-1 rounded bg-gray-100"
+      >
+        🎙️ Audio
+      </div>
+      <div>
+        ➡️
+      </div>
+      <div
+        class="px-2 py-1 rounded bg-gray-100"
+      >
+        ✅ Finalize
+      </div>
+    </div>
+    <div
+      class="bg-white/90 backdrop-blur-sm shadow-xl rounded-2xl p-6 border border-white/20"
+    >
+      <div>
+        <h2
+          class="text-xl font-semibold mb-4"
+        >
+          Step 1: Upload Your Image
+        </h2>
+        <div
+          class="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors border-gray-300 hover:border-gray-400"
+          role="presentation"
+          tabindex="0"
+        >
+          <input
+            accept="image/*,.png,.jpg,.jpeg,.gif,.webp"
+            multiple=""
+            style="border: 0px; clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); height: 1px; margin: 0px -1px -1px 0px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+            tabindex="-1"
+            type="file"
+          />
+          <p>
+            Drag 'n' drop an image here, or click to select one.
+          </p>
+        </div>
+        <div
+          class="mt-6"
+        >
+          <label
+            class="block text-sm font-medium text-gray-700 mb-2"
+            for="analysis-prompt"
+          >
+            Analysis Prompt (Optional)
+          </label>
+          <textarea
+            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            id="analysis-prompt"
+            placeholder="e.g., 'This is a Kandinsky painting, focus on the abstract expressionism...'"
+            rows="4"
+          />
+          <p
+            class="mt-2 text-xs text-gray-500"
+          >
+            Provide any specific context or instructions for the AI analysis.
+          </p>
+        </div>
+        <div
+          class="mt-8 flex justify-end"
+        >
+          <button
+            class="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50"
+            disabled=""
+          >
+            Continue
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      class="fixed bottom-0 left-0 right-0 z-40"
+    >
+      <div
+        class="mx-auto max-w-5xl px-4 pb-3"
+      >
+        <div
+          class="bg-white/80 backdrop-blur-md border rounded-full shadow-lg overflow-hidden"
+        >
+          <div
+            class="relative h-8"
+          >
+            <div
+              class="absolute inset-0 bg-gray-100"
+            />
+            <div
+              class="absolute inset-y-0 left-0 bg-indigo-500 transition-all"
+              style="width: 25%;"
+            />
+            <div
+              class="relative z-10 h-full flex items-center justify-between px-3 text-xs text-white"
+            >
+              <div
+                class="flex items-center gap-2"
+              >
+                <span>
+                  🖼️
+                </span>
+                <span>
+                  Upload
+                </span>
+              </div>
+              <div
+                class="font-medium"
+              >
+                25%
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="fixed top-4 right-4 z-[1000] space-y-2"
+  />
+</DocumentFragment>
+`;

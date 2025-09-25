@@ -1,0 +1,46 @@
+[
+  {
+    "file_path":"audio_samples\/19587fa4-1fbf-4e4e-adbb-8bd9772aab9e_es_chunk_0.mp3",
+    "issue_type":"Non-English as English",
+    "claimed_language":"spanish",
+    "detected_language":"en",
+    "confidence":0,
+    "priority":"MEDIUM",
+    "action":"Update metadata only (content is English)",
+    "estimated_cost":"Low (metadata update)",
+    "business_impact":"Medium (metadata inconsistency)"
+  },
+  {
+    "file_path":"audio_samples\/19587fa4-1fbf-4e4e-adbb-8bd9772aab9e_hi_full.mp3",
+    "issue_type":"Non-English as English",
+    "claimed_language":"hindi",
+    "detected_language":"en",
+    "confidence":0,
+    "priority":"MEDIUM",
+    "action":"Update metadata only (content is English)",
+    "estimated_cost":"Low (metadata update)",
+    "business_impact":"Medium (metadata inconsistency)"
+  },
+  {
+    "file_path":"audio_samples\/19587fa4-1fbf-4e4e-adbb-8bd9772aab9e_hi_chunk_0.mp3",
+    "issue_type":"Non-English as English",
+    "claimed_language":"hindi",
+    "detected_language":"en",
+    "confidence":0,
+    "priority":"MEDIUM",
+    "action":"Update metadata only (content is English)",
+    "estimated_cost":"Low (metadata update)",
+    "business_impact":"Medium (metadata inconsistency)"
+  },
+  {
+    "file_path":"audio_samples\/19587fa4-1fbf-4e4e-adbb-8bd9772aab9e_es_full.mp3",
+    "issue_type":"Non-English as English",
+    "claimed_language":"spanish",
+    "detected_language":"en",
+    "confidence":0,
+    "priority":"MEDIUM",
+    "action":"Update metadata only (content is English)",
+    "estimated_cost":"Low (metadata update)",
+    "business_impact":"Medium (metadata inconsistency)"
+  }
+]

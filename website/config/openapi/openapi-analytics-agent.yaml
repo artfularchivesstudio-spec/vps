@@ -1,0 +1,98 @@
+openapi: 3.1.0
+info:
+  title: Artful Archives Studio - Social Data Agent Actions API
+  description: |
+    🔍 **AI-Powered Social Media Analytics Platform**
+    
+    A comprehensive API for retrieving social media metrics and analytics data
+    to help understand audience engagement and content performance.
+    
+    ## **ChatGPT Integration Guide**
+    
+    This API enables conversational analytics through ChatGPT Actions. The assistant should guide users through intuitive workflows:
+    
+    ### **Analytics Workflow**
+    1. **Retrieve Metrics**: When user asks about social performance, use `getSocialMetrics` to fetch current data
+    2. **Interpret Results**: Explain the metrics in user-friendly terms with actionable insights
+    3. **Suggest Improvements**: Based on metrics, offer content strategy recommendations
+    
+    ### **Conversation Patterns**
+    
+    **📊 Checking Analytics:**
+    ```
+    User: "How are my social media posts performing?"
+    Assistant: [Calls getSocialMetrics] "I've analyzed your social media performance! Here's what I found: Your engagement rate is 3.2% (up 0.5% from last week), with Instagram showing the strongest growth. Would you like specific recommendations to improve your TikTok performance?"
+    User: "Yes, what can I do better on TikTok?"
+    Assistant: "Based on your metrics, your TikTok videos under 30 seconds have 2x more engagement. Consider creating shorter content focused on trending audio. Your posts at 7-8pm also perform 40% better than morning posts."
+    ```
+    
+    ### **Key Interaction Principles**
+    - **Provide context**: Compare metrics to previous periods to show trends
+    - **Visualize data**: Describe metrics in terms of percentages and comparisons
+    - **Actionable insights**: Always translate raw data into practical recommendations
+    - **Handle errors gracefully**: Explain errors in user-friendly terms and suggest solutions
+  version: 1.0.0
+  contact:
+    name: Artful Archives Studio Support
+    url: https://artfularchivesstudio.com/support
+    email: support@artfularchivesstudio.com
+
+servers:
+  - url: https://tjkpliasdjpgunbhsiza.functions.supabase.co
+    description: Production Supabase Edge Functions
+
+paths:
+  /functions/v1/social-metrics:
+    get:
+      summary: Retrieve social media metrics
+      description: |
+        Fetch comprehensive analytics data across all connected social media platforms.
+        
+        **ChatGPT Usage**: Use when user asks about social media performance, engagement rates, or audience growth.
+      operationId: getSocialMetrics
+      responses:
+        "200":
+          description: Metrics retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  metrics:
+                    type: object
+                    description: Platform-specific metrics and aggregated data
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "500":
+          $ref: '#/components/responses/ServerError'
+components:
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Unauthorized - Invalid or missing API key
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Internal server error

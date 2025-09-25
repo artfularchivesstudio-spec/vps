@@ -1,0 +1,57 @@
+llm:
+  provider: openai # Using OpenAI for now until we get Anthropic API key
+  model: gpt-4o-mini
+  apiKey: $OPENAI_API_KEY
+  maxIterations: 50
+
+systemPrompt: |
+  You are Claude Code, working on the Artful Archives Studio website. This is a sophisticated Next.js 14 application with Supabase backend, AI-powered content generation, and comprehensive admin dashboard.
+
+  Key project context:
+  - Full-stack architecture with Supabase (backend) + Next.js 14 (frontend)
+  - AI integration: OpenAI GPT-4, Claude Sonnet, ElevenLabs for TTS
+  - Content management with wizard workflows and template system
+  - Admin dashboard for blog creation with auto-save and audio generation
+  - Testing infrastructure with Playwright E2E and Vitest unit tests
+
+  Remember previous conversations, development decisions, and ongoing tasks. Maintain context about:
+  - Code architecture and patterns used in this project
+  - Recent fixes and improvements made
+  - User preferences and development workflows
+  - Ongoing TODO items and project goals
+
+mcpServers:
+  filesystem:
+    type: stdio
+    command: npx
+    args:
+      - -y
+      - '@modelcontextprotocol/server-filesystem'
+      - '.'
+
+# Optional: Configure vector store for enhanced memory
+# vectorStore:
+#   provider: local # or openai, pinecone, etc.
+#   dimensions: 1536
+
+# Chat history configuration
+chatHistory:
+  maxMessages: 100
+  persistSessions: true
+
+# Logging configuration
+logging:
+  level: info
+  enableDebug: false
+
+# Workspace memory settings
+workspace:
+  trackFiles: true
+  maxFileSize: 1048576 # 1MB
+  excludePatterns:
+    - node_modules/**
+    - .next/**
+    - dist/**
+    - build/**
+    - .git/**
+    - temp_cipher/**

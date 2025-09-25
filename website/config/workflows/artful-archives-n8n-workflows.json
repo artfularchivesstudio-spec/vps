@@ -1,0 +1,343 @@
+{
+  "versionId": "1.0",
+  "name": "Artful Archives Studio Workflows",
+  "description": "n8n workflows for Artful Archives Studio API integration",
+  "workflows": [
+    {
+      "name": "Generate Blog Post with Audio",
+      "nodes": [
+        {
+          "name": "Start",
+          "type": "n8n-nodes-base.manualTrigger",
+          "parameters": {},
+          "position": [
+            250,
+            300
+          ]
+        },
+        {
+          "name": "Generate Blog Content",
+          "type": "n8n-nodes-base.httpRequest",
+          "parameters": {
+            "authentication": "genericCredentialType",
+            "genericAuthType": "httpHeaderAuth",
+            "url": "https://tjkpliasdjpgunbhsiza.functions.supabase.co/functions/v1/generate-blog-content",
+            "method": "POST",
+            "headers": {
+              "Authorization": "=Bearer {{$credentials.apiKey}}",
+              "Content-Type": "application/json"
+            },
+            "options": {},
+            "bodyContentType": "raw",
+            "rawBody": "={\n  \"topic\": \"{{$json[\"topic\"]}}\",\n  \"style\": \"{{$json[\"style\"]}}\",\n  \"length\": \"{{$json[\"length\"]}}\"\n}"
+          },
+          "position": [
+            450,
+            300
+          ]
+        },
+        {
+          "name": "Create Blog Post",
+          "type": "n8n-nodes-base.httpRequest",
+          "parameters": {
+            "authentication": "genericCredentialType",
+            "genericAuthType": "httpHeaderAuth",
+            "url": "https://artful-archives-website-gsinghdevs-projects.vercel.app/api/external/posts",
+            "method": "POST",
+            "headers": {
+              "Authorization": "=Bearer {{$credentials.apiKey}}",
+              "Content-Type": "application/json"
+            },
+            "options": {},
+            "bodyContentType": "raw",
+            "rawBody": "={\n  \"title\": \"{{$json[\"data\"][\"title\"]}}\",\n  \"content\": \"{{$json[\"data\"][\"content\"]}}\",\n  \"excerpt\": \"{{$json[\"data\"][\"excerpt\"]}}\",\n  \"seo_title\": \"{{$json[\"data\"][\"seo_title\"]}}\",\n  \"seo_description\": \"{{$json[\"data\"][\"seo_description\"]}}\",\n  \"status\": \"draft\"\n}"
+          },
+          "position": [
+            650,
+            300
+          ]
+        },
+        {
+          "name": "Generate Audio Narration",
+          "type": "n8n-nodes-base.httpRequest",
+          "parameters": {
+            "authentication": "genericCredentialType",
+            "genericAuthType": "httpHeaderAuth",
+            "url": "https://tjkpliasdjpgunbhsiza.functions.supabase.co/functions/v1/ai-generate-audio-simple",
+            "method": "POST",
+            "headers": {
+              "Authorization": "=Bearer {{$credentials.apiKey}}",
+              "Content-Type": "application/json"
+            },
+            "options": {},
+            "bodyContentType": "raw",
+            "rawBody": "={\n  \"text\": \"{{$json[\"data\"][\"content\"]}}\",\n  \"voice_id\": \"alloy\",\n  \"language\": \"en\"\n}"
+          },
+          "position": [
+            850,
+            300
+          ]
+        },
+        {
+          "name": "Save Audio to Storage",
+          "type": "n8n-nodes-base.httpRequest",
+          "parameters": {
+            "authentication": "genericCredentialType",
+            "genericAuthType": "httpHeaderAuth",
+            "url": "https://artful-archives-website-gsinghdevs-projects.vercel.app/api/external/media",
+            "method": "POST",
+            "headers": {
+              "Authorization": "=Bearer {{$credentials.apiKey}}",
+              "Content-Type": "application/json"
+            },
+            "options": {},
+            "bodyContentType": "raw",
+            "rawBody": "={\n  \"title\": \"Audio for {{$json[\"data\"][\"title\"]}}\",\n  \"file_data\": \"{{$json[\"data\"][\"audio_data\"]}}\",\n  \"file_type\": \"audio\"\n}"
+          },
+          "position": [
+            1050,
+            300
+          ]
+        }
+      ],
+      "connections": {
+        "Start": {
+          "main": [
+            [
+              {
+                "node": "Generate Blog Content",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Generate Blog Content": {
+          "main": [
+            [
+              {
+                "node": "Create Blog Post",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Create Blog Post": {
+          "main": [
+            [
+              {
+                "node": "Generate Audio Narration",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Generate Audio Narration": {
+          "main": [
+            [
+              {
+                "node": "Save Audio to Storage",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "Analyze Image and Create Blog Post",
+      "nodes": [
+        {
+          "name": "Start",
+          "type": "n8n-nodes-base.manualTrigger",
+          "parameters": {
+            "notice": "Provide base64 encoded image data"
+          },
+          "position": [
+            250,
+            300
+          ]
+        },
+        {
+          "name": "Analyze Image",
+          "type": "n8n-nodes-base.httpRequest",
+          "parameters": {
+            "authentication": "genericCredentialType",
+            "genericAuthType": "httpHeaderAuth",
+            "url": "https://tjkpliasdjpgunbhsiza.functions.supabase.co/functions/v1/ai-analyze-image",
+            "method": "POST",
+            "headers": {
+              "Authorization": "=Bearer {{$credentials.apiKey}}",
+              "Content-Type": "application/json"
+            },
+            "options": {},
+            "bodyContentType": "raw",
+            "rawBody": "={\n  \"image_data\": \"{{$json[\"image_data\"]}}\",\n  \"analysis_type\": \"detailed\"\n}"
+          },
+          "position": [
+            450,
+            300
+          ]
+        },
+        {
+          "name": "Create Blog Post from Analysis",
+          "type": "n8n-nodes-base.httpRequest",
+          "parameters": {
+            "authentication": "genericCredentialType",
+            "genericAuthType": "httpHeaderAuth",
+            "url": "https://artful-archives-website-gsinghdevs-projects.vercel.app/api/external/posts",
+            "method": "POST",
+            "headers": {
+              "Authorization": "=Bearer {{$credentials.apiKey}}",
+              "Content-Type": "application/json"
+            },
+            "options": {},
+            "bodyContentType": "raw",
+            "rawBody": "={\n  \"title\": \"{{$json[\"data\"][\"suggested_title\"]}}\",\n  \"content\": \"{{$json[\"data\"][\"openai\"][\"content\"]}}\",\n  \"excerpt\": \"{{$json[\"data\"][\"suggested_title\"]}}\",\n  \"seo_title\": \"{{$json[\"data\"][\"suggested_title\"]}}\",\n  \"seo_description\": \"Art analysis generated by AI\",\n  \"status\": \"draft\"\n}"
+          },
+          "position": [
+            650,
+            300
+          ]
+        }
+      ],
+      "connections": {
+        "Start": {
+          "main": [
+            [
+              {
+                "node": "Analyze Image",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Analyze Image": {
+          "main": [
+            [
+              {
+                "node": "Create Blog Post from Analysis",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "List and Update Blog Posts",
+      "nodes": [
+        {
+          "name": "Start",
+          "type": "n8n-nodes-base.manualTrigger",
+          "parameters": {},
+          "position": [
+            250,
+            300
+          ]
+        },
+        {
+          "name": "List Blog Posts",
+          "type": "n8n-nodes-base.httpRequest",
+          "parameters": {
+            "authentication": "genericCredentialType",
+            "genericAuthType": "httpHeaderAuth",
+            "url": "https://tjkpliasdjpgunbhsiza.functions.supabase.co/functions/v1/posts-simple?limit=10",
+            "method": "GET",
+            "headers": {
+              "Authorization": "=Bearer {{$credentials.apiKey}}"
+            },
+            "options": {}
+          },
+          "position": [
+            450,
+            300
+          ]
+        },
+        {
+          "name": "Update Each Post",
+          "type": "n8n-nodes-base.itemLists",
+          "parameters": {
+            "operation": "iterate",
+            "inputDataFieldName": "data.posts"
+          },
+          "position": [
+            650,
+            300
+          ]
+        },
+        {
+          "name": "Update Post Status",
+          "type": "n8n-nodes-base.httpRequest",
+          "parameters": {
+            "authentication": "genericCredentialType",
+            "genericAuthType": "httpHeaderAuth",
+            "url": "='https://artful-archives-website-gsinghdevs-projects.vercel.app/api/external/posts/' + {{$json[\"id\"]}}",
+            "method": "PUT",
+            "headers": {
+              "Authorization": "=Bearer {{$credentials.apiKey}}",
+              "Content-Type": "application/json"
+            },
+            "options": {},
+            "bodyContentType": "raw",
+            "rawBody": "={\n  \"status\": \"published\"\n}"
+          },
+          "position": [
+            850,
+            300
+          ]
+        }
+      ],
+      "connections": {
+        "Start": {
+          "main": [
+            [
+              {
+                "node": "List Blog Posts",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "List Blog Posts": {
+          "main": [
+            [
+              {
+                "node": "Update Each Post",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        },
+        "Update Each Post": {
+          "main": [
+            [
+              {
+                "node": "Update Post Status",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      }
+    }
+  ],
+  "credentials": {
+    "apiKey": {
+      "name": "Artful Archives API Key",
+      "type": "httpHeaderAuth",
+      "data": {
+        "name": "Authorization",
+        "value": "Bearer YOUR_API_KEY_HERE"
+      }
+    }
+  }
+}

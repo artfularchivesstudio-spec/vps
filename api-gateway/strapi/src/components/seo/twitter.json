@@ -1,0 +1,70 @@
+{
+  "kind": "component",
+  "collectionName": "components_seo_twitters",
+  "componentName": "twitter",
+  "info": {
+    "displayName": "Twitter",
+    "description": "Twitter Card metadata"
+  },
+  "attributes": {
+    "card": {
+      "type": "enumeration",
+      "enum": [
+        "summary",
+        "summary_large_image",
+        "app",
+        "player"
+      ],
+      "default": "summary_large_image",
+      "required": false
+    },
+    "site": {
+      "type": "string",
+      "required": false,
+      "maxLength": 100
+    },
+    "creator": {
+      "type": "string",
+      "required": false,
+      "maxLength": 100
+    },
+    "title": {
+      "type": "string",
+      "required": false,
+      "maxLength": 70,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "description": {
+      "type": "text",
+      "required": false,
+      "maxLength": 200,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "imageAlt": {
+      "type": "string",
+      "required": false,
+      "maxLength": 420,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}

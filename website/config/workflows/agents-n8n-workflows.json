@@ -1,0 +1,98 @@
+{
+  "versionId": "1.0",
+  "name": "Agent Mock Workflows",
+  "description": "n8n demos for orchestrator and agents",
+  "workflows": [
+    {
+      "name": "Content Agent Mock",
+      "nodes": [
+        { "name": "Start", "type": "n8n-nodes-base.manualTrigger", "parameters": {}, "position": [250,300] },
+        {
+          "name": "Call Orchestrator",
+          "type": "n8n-nodes-base.httpRequest",
+          "parameters": {
+            "url": "http://localhost:3000/api/agent",
+            "method": "POST",
+            "authentication": "genericCredentialType",
+            "genericAuthType": "httpHeaderAuth",
+            "headers": { "Authorization": "=Bearer {{$credentials.orchestratorApi}}", "Content-Type": "application/json" },
+            "bodyContentType": "raw",
+            "rawBody": "={\n  \"type\": \"content\",\n  \"payload\": { \"title\": \"Demo Post\" }\n}"
+          },
+          "position": [450,300]
+        }
+      ],
+      "connections": { "Start": { "main": [[{ "node": "Call Orchestrator", "type": "main", "index": 0 }]] } }
+    },
+    {
+      "name": "Product Agent Mock",
+      "nodes": [
+        { "name": "Start", "type": "n8n-nodes-base.manualTrigger", "parameters": {}, "position": [250,300] },
+        {
+          "name": "Call Orchestrator",
+          "type": "n8n-nodes-base.httpRequest",
+          "parameters": {
+            "url": "http://localhost:3000/api/agent",
+            "method": "POST",
+            "authentication": "genericCredentialType",
+            "genericAuthType": "httpHeaderAuth",
+            "headers": { "Authorization": "=Bearer {{$credentials.orchestratorApi}}", "Content-Type": "application/json" },
+            "bodyContentType": "raw",
+            "rawBody": "={\n  \"type\": \"product\",\n  \"payload\": { \"id\": 1 }\n}"
+          },
+          "position": [450,300]
+        }
+      ],
+      "connections": { "Start": { "main": [[{ "node": "Call Orchestrator", "type": "main", "index": 0 }]] } }
+    },
+    {
+      "name": "Social Agent Mock",
+      "nodes": [
+        { "name": "Start", "type": "n8n-nodes-base.manualTrigger", "parameters": {}, "position": [250,300] },
+        {
+          "name": "Call Orchestrator",
+          "type": "n8n-nodes-base.httpRequest",
+          "parameters": {
+            "url": "http://localhost:3000/api/agent",
+            "method": "POST",
+            "authentication": "genericCredentialType",
+            "genericAuthType": "httpHeaderAuth",
+            "headers": { "Authorization": "=Bearer {{$credentials.orchestratorApi}}", "Content-Type": "application/json" },
+            "bodyContentType": "raw",
+            "rawBody": "={\n  \"type\": \"social\",\n  \"payload\": { \"message\": \"hi\" }\n}"
+          },
+          "position": [450,300]
+        }
+      ],
+      "connections": { "Start": { "main": [[{ "node": "Call Orchestrator", "type": "main", "index": 0 }]] } }
+    },
+    {
+      "name": "Content Campaign",
+      "nodes": [
+        { "name": "Start", "type": "n8n-nodes-base.manualTrigger", "parameters": {}, "position": [250,300] },
+        {
+          "name": "Call Orchestrator",
+          "type": "n8n-nodes-base.httpRequest",
+          "parameters": {
+            "url": "http://localhost:3000/api/agent",
+            "method": "POST",
+            "authentication": "genericCredentialType",
+            "genericAuthType": "httpHeaderAuth",
+            "headers": { "Authorization": "=Bearer {{$credentials.orchestratorApi}}", "Content-Type": "application/json" },
+            "bodyContentType": "raw",
+            "rawBody": "={\n  \\\"workflow\\\": \\\"contentCampaign\\\",\n  \\\"params\\\": { \\\"title\\\": \\\"Demo\\\" }\n}"
+          },
+          "position": [450,300]
+        }
+      ],
+      "connections": { "Start": { "main": [[{ "node": "Call Orchestrator", "type": "main", "index": 0 }]] } }
+    }
+  ],
+  "credentials": {
+    "orchestratorApi": {
+      "name": "Orchestrator API Key",
+      "type": "httpHeaderAuth",
+      "data": { "name": "Authorization", "value": "Bearer YOUR_API_KEY" }
+    }
+  }
+}

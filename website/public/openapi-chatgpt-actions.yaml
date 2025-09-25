@@ -1,0 +1,1187 @@
+openapi: 3.1.0
+info:
+  title: Artful Archives Studio - ChatGPT Actions API (Complete)
+  description: |
+    🎭 **Spellbinding AI-Powered Content Creation Platform**
+    
+    A comprehensive API for ChatGPT Actions featuring mystical Museum Director personas, 
+    multilingual audio narration with magical enhancement, and complete content management workflows.
+    
+    ## **ChatGPT Integration Guide**
+    
+    This API enables conversational content management through ChatGPT Actions. The assistant should guide users through intuitive workflows:
+    
+    ### **Blog Post Creation Workflow**
+    1. **Image to Blog**: When user uploads artwork, use `createBlogFromImage` to generate complete blog content
+    2. **Save as Draft**: Use the generated content with `createPost` to save as draft
+    3. **Audio Generation**: Offer to generate multilingual audio narration using `generateAudio`
+    4. **Publishing Decision**: Ask user if they want to publish or keep as draft using `updatePost`
+    
+    ### **Conversation Patterns**
+    
+    **🎨 Creating Blog Posts:**
+    ```
+    User: "I have an artwork image to create a blog post about"
+    Assistant: "I'd love to help you create a blog post! Please upload your artwork image and I'll create engaging content from it."
+    [User uploads image]
+    Assistant: [Calls createBlogFromImage] "I've analyzed your artwork and created a complete blog post! Here's the title, content, and metadata I generated... [shows results]. Would you like me to save this as a draft in your blog?"
+    User: "Yes, save it as a draft"
+    Assistant: [Calls createPost with the generated content] "Perfect! I've saved your blog post as a draft. Would you like me to generate an audio narration for this post?"
+    User: "Yes, generate audio in English and Spanish"
+    Assistant: [Calls generateAudio] "I've started generating audio in English and Spanish! The job ID is [ID]. Would you like to publish this post now or keep it as a draft?"
+    ```
+    
+    **🎵 Audio Management:**
+    ```
+    User: "How is my audio generation going?"
+    Assistant: [Calls getAudioJobStatus] "Your audio job is [status]. [If completed] The audio files are ready! Would you like to listen to them or update the post?"
+    
+    User: "The Spanish audio sounds like it's still in English"
+    Assistant: [Calls regenerateLanguageAudio with language="es"] "I've queued regeneration for the Spanish audio. This will create a new Spanish narration with proper translation. I'll check the status in a moment."
+    
+    User: "Regenerate just the Hindi audio with better quality"
+    Assistant: [Calls regenerateLanguageAudio with language="hi"] "I've started regenerating just the Hindi audio while keeping your English and Spanish versions intact. The new Hindi narration will be ready shortly."
+    ```
+    
+    **📝 Content Management:**
+    ```
+    User: "Show me my recent posts"
+    Assistant: [Calls listPosts] "Here are your recent posts: [list]. Would you like to edit, publish, or create audio for any of these?"
+    User: "Edit the second one"
+    Assistant: [Calls getPost] "Here's the current content: [content]. What would you like to change?"
+    User: "Update the title to..."
+    Assistant: [Calls updatePost] "I've updated your post! The new title is '[title]'. Would you like to generate new audio to match the updated content?"
+    ```
+    
+    ### **Key Interaction Principles**
+    - **Always confirm actions**: Ask before publishing, deleting, or making major changes
+    - **Provide status updates**: Keep users informed about job progress and completion
+    - **Offer next steps**: After each action, suggest relevant follow-up actions
+    - **Handle errors gracefully**: Explain errors in user-friendly terms and suggest solutions
+    - **Context awareness**: Remember previous actions in the conversation for smoother flow
+
+  version: 3.0.0
+  contact:
+    name: Artful Archives Studio Support
+    url: https://artfularchivesstudio.com/support
+    email: support@artfularchivesstudio.com
+
+servers:
+  - url: https://tjkpliasdjpgunbhsiza.supabase.co/functions/v1
+    description: Production Supabase Edge Functions API
+
+# No authentication required for ChatGPT Actions (pre-production)
+# security: []  # Disabled for easier ChatGPT integration
+
+paths:
+  # ===== BLOG POSTS MANAGEMENT =====
+  
+  /posts-simple:
+    get:
+      summary: List blog posts
+      description: |
+        Retrieve a paginated list of blog posts with optional filtering.
+        
+        **ChatGPT Usage**: Use when user asks to "show my posts", "list my blogs", or wants to browse content.
+      operationId: listPosts
+      # No authentication required
+      parameters:
+        - name: limit
+          in: query
+          description: Number of posts to return (max 100)
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: status
+          in: query
+          description: Filter posts by publication status
+          required: false
+          schema:
+            type: string
+            enum: [draft, published, archived]
+        - name: search
+          in: query
+          description: Search posts by title or content
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully retrieved posts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      posts:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/BlogPost"
+                      pagination:
+                        $ref: "#/components/schemas/Pagination"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/ServerError"
+          
+    post:
+      summary: Create blog post
+      description: |
+        Create a new blog post with content and metadata.
+        
+        **ChatGPT Usage**: Use when user wants to create new content. Always create as 'draft' initially, then ask user if they want to publish.
+        
+        **Example**: After analyzing an image, use the analysis results to populate title and content fields.
+      operationId: createPost
+      x-openai-isConsequential: true
+      # No authentication required
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - content
+              properties:
+                title:
+                  type: string
+                  description: The title of the blog post
+                  example: "The Mystical Dance of Light in Van Gogh's Starry Night"
+                  maxLength: 200
+                content:
+                  type: string
+                  description: The main content of the blog post (supports Markdown)
+                  example: "In this spellbinding masterpiece, Vincent van Gogh transforms the night sky into a swirling symphony of cosmic energy..."
+                  maxLength: 50000
+                excerpt:
+                  type: string
+                  description: Optional excerpt/summary (auto-generated if not provided)
+                  example: "Exploring the mystical elements and artistic techniques in Van Gogh's iconic night scene."
+                  maxLength: 500
+                slug:
+                  type: string
+                  description: Optional URL-friendly slug (auto-generated from title if not provided)
+                  example: "mystical-dance-light-van-gogh-starry-night"
+                  pattern: '^[a-z0-9-]+$'
+                status:
+                  type: string
+                  enum: [draft, published, archived]
+                  default: draft
+                  description: "Publication status - always use 'draft' initially"
+                featured_image_url:
+                  type: string
+                  format: uri
+                  description: URL of the featured image (from image analysis)
+                  example: "https://example.com/uploads/starry-night.jpg"
+                seo_title:
+                  type: string
+                  description: SEO-optimized title for search engines
+                  maxLength: 60
+                seo_description:
+                  type: string
+                  description: SEO meta description
+                  maxLength: 160
+                categories:
+                  type: array
+                  items:
+                    type: string
+                  example: ["Art Analysis", "Post-Impressionism"]
+                  description: Content categories for organization
+                tags:
+                  type: array
+                  items:
+                    type: string
+                  example: ["Van Gogh", "Starry Night", "Art History"]
+                  description: Tags for content discovery
+                origin_source:
+                  type: string
+                  enum: [chatgpt, manual, openai, claude, merged, generated, uploaded]
+                  default: chatgpt
+                  description: "Source of content creation - use 'chatgpt' for ChatGPT Actions"
+      responses:
+        "201":
+          description: Post created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: "#/components/schemas/BlogPost"
+                  message:
+                    type: string
+                    example: "Blog post created successfully as draft"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /posts/{post_id}:
+    get:
+      summary: Get specific blog post
+      description: |
+        Retrieve a single blog post by ID with full content and metadata.
+        
+        **ChatGPT Usage**: Use when user wants to view, edit, or work with a specific post.
+      operationId: getPost
+      # No authentication required
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          description: Unique identifier of the blog post
+          schema:
+            type: string
+            format: uuid
+            example: "a758cb1f-7144-4fc1-93f7-356aac0fd84f"
+      responses:
+        "200":
+          description: Successfully retrieved post
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: "#/components/schemas/BlogPost"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/ServerError"
+          
+    put:
+      summary: Update blog post
+      description: |
+        Update an existing blog post with new content or metadata.
+        
+        **ChatGPT Usage**: Use when user wants to edit content, change publication status, or update metadata.
+        
+        **Publishing Flow**: When user says "publish this post", update status to 'published'.
+      operationId: updatePost
+      x-openai-isConsequential: true
+      # No authentication required
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          description: Unique identifier of the blog post to update
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Updated title
+                  maxLength: 200
+                content:
+                  type: string
+                  description: Updated content (supports Markdown)
+                  maxLength: 50000
+                excerpt:
+                  type: string
+                  description: Updated excerpt
+                  maxLength: 500
+                status:
+                  type: string
+                  enum: [draft, published, archived]
+                  description: "Use 'published' when user wants to publish"
+                featured_image_url:
+                  type: string
+                  format: uri
+                  description: Updated featured image URL
+                seo_title:
+                  type: string
+                  maxLength: 60
+                seo_description:
+                  type: string
+                  maxLength: 160
+                categories:
+                  type: array
+                  items:
+                    type: string
+                tags:
+                  type: array
+                  items:
+                    type: string
+                publish_immediately:
+                  type: boolean
+                  description: "Set to true when user explicitly wants to publish"
+                  default: false
+      responses:
+        "200":
+          description: Post updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: "#/components/schemas/BlogPost"
+                  message:
+                    type: string
+                    example: "Post updated and published successfully"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/ServerError"
+          
+    delete:
+      summary: Delete blog post
+      description: |
+        Permanently delete a blog post.
+        
+        **ChatGPT Usage**: Use when user explicitly requests deletion. Always confirm before deleting.
+        
+        **Safety**: Ask user "Are you sure you want to permanently delete this post?" before calling.
+      operationId: deletePost
+      x-openai-isConsequential: true
+      # No authentication required
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          description: Unique identifier of the blog post to delete
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Post deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Blog post deleted successfully"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  # ===== IMAGE ANALYSIS =====
+  
+  /ai-analyze-image-simple:
+    post:
+      summary: Create blog post from artwork image
+      description: |
+        Analyze uploaded artwork using AI and generate complete blog post content.
+        
+        **ChatGPT Usage**: Main blog creation workflow. Use when user uploads image for blog creation.
+      operationId: createBlogFromImage
+      x-openai-isConsequential: false
+      # No authentication required
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - image_data
+              properties:
+                image_data:
+                  type: string
+                  description: "Base64 data URL (data:image/jpeg;base64,...) of the artwork"
+                  example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUg..."
+                analysis_type:
+                  type: string
+                  enum: [detailed, concise, blog_focused, social_media]
+                  default: detailed
+                  description: "Use 'blog_focused' for creating blog posts"
+                providers:
+                  type: array
+                  items:
+                    type: string
+                    enum: [openai, claude]
+                  default: ["openai", "claude"]
+                  description: "AI providers to use for analysis"
+                custom_prompt:
+                  type: string
+                  description: "Optional custom prompt for specific analysis focus"
+                  example: "Focus on the artistic techniques and historical context"
+                generate_blog_content:
+                  type: boolean
+                  default: true
+                  description: "Generate ready-to-use blog content"
+      responses:
+        "200":
+          description: Analysis completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: "#/components/schemas/ImageAnalysisResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  # ===== AUDIO GENERATION & MANAGEMENT =====
+  
+  /ai-generate-audio-simple:
+    post:
+      summary: Generate multilingual audio narration
+      description: |
+        Generate high-quality audio narration with Spellbinding Museum Director persona enhancement.
+        
+        **ChatGPT Usage**: Offer after creating blog posts. Ask user which languages they want.
+      operationId: generateAudio
+      x-openai-isConsequential: true
+      # No authentication required
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                  description: "Text content to convert to audio (will be enhanced by mystical persona)"
+                  example: "In this spellbinding masterpiece, the artist's vision transcends the ordinary..."
+                  maxLength: 10000
+                languages:
+                  type: array
+                  items:
+                    type: string
+                    enum: [en, es, hi]
+                  default: ["en"]
+                  description: "Languages for multilingual narration"
+                  example: ["en", "es"]
+                provider:
+                  type: string
+                  enum: [openai, elevenlabs]
+                  default: openai
+                  description: "Audio generation provider"
+                voice_id:
+                  type: string
+                  default: "nova"
+                  description: "Voice ID (nova, alloy for OpenAI; custom IDs for ElevenLabs)"
+                  example: "nova"
+                voice_settings:
+                  type: object
+                  description: "Voice customization settings"
+                  properties:
+                    stability:
+                      type: number
+                      format: float
+                      minimum: 0
+                      maximum: 1
+                      default: 0.5
+                      description: "Voice stability (ElevenLabs)"
+                    similarity_boost:
+                      type: number
+                      format: float
+                      minimum: 0
+                      maximum: 1
+                      default: 0.8
+                      description: "Voice similarity (ElevenLabs)"
+                    speed:
+                      type: number
+                      format: float
+                      minimum: 0.5
+                      maximum: 2.0
+                      default: 0.9
+                      description: "Narration speed (mystical pacing)"
+                post_id:
+                  type: string
+                  format: uuid
+                  description: "Link audio to specific blog post"
+                title:
+                  type: string
+                  description: "Title for the audio content"
+                  example: "The Mystical Dance of Light - Audio Narration"
+                save_to_storage:
+                  type: boolean
+                  default: true
+                  description: "Save audio files to permanent storage"
+      responses:
+        "202":
+          description: Audio generation job submitted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  jobId:
+                    type: string
+                    example: "audio_job_12345"
+                    description: "Job ID for tracking progress"
+                  message:
+                    type: string
+                    example: "Audio generation job submitted for 2 languages"
+                  estimated_completion:
+                    type: string
+                    format: date-time
+                    description: "Estimated completion time"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  # ===== AUDIO JOB MANAGEMENT =====
+  
+  /audio-jobs:
+    get:
+      summary: List audio generation jobs
+      description: |
+        Retrieve list of audio generation jobs with status information.
+        
+        **ChatGPT Usage**: Use when user asks "show my audio jobs" or "what audio is being generated?"
+      operationId: listAudioJobs
+      # No authentication required
+      parameters:
+        - name: status
+          in: query
+          description: Filter jobs by status
+          schema:
+            type: string
+            enum: [pending, processing, completed, failed]
+        - name: post_id
+          in: query
+          description: Filter jobs by associated post
+          schema:
+            type: string
+            format: uuid
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: Audio jobs retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AudioJob"
+                  total:
+                    type: integer
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /audio-job-status/{job_id}:
+    get:
+      summary: Get audio job status and results
+      description: |
+        Check the progress and results of an audio generation job.
+        
+        **ChatGPT Usage**: Use to check job progress and get download links when completed.
+      operationId: getAudioJobStatus
+      # No authentication required
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          description: Audio generation job identifier
+          schema:
+            type: string
+            example: "audio_job_12345"
+      responses:
+        "200":
+          description: Job status retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: "#/components/schemas/AudioJobStatus"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /audio-job-update:
+    put:
+      summary: Update audio generation job
+      description: |
+        Update job parameters or retry failed jobs.
+        
+        **ChatGPT Usage**: Use when user wants to modify job settings or retry failed generation.
+      operationId: updateAudioJob
+      x-openai-isConsequential: true
+      # No authentication required
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - job_id
+              properties:
+                job_id:
+                  type: string
+                  description: "Job identifier to update"
+                action:
+                  type: string
+                  enum: [retry, cancel, update_settings]
+                  description: "Action to perform on the job"
+                voice_settings:
+                  type: object
+                  description: "Updated voice settings (for update_settings action)"
+      responses:
+        "200":
+          description: Job updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: "#/components/schemas/AudioJob"
+                  message:
+                    type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /audio-regenerate-language:
+    post:
+      summary: Regenerate audio for specific language
+      description: Regenerate audio narration for a specific language within an existing multilingual job. Use when user reports issues with specific language audio or wants to update just one language.
+      operationId: regenerateLanguageAudio
+      x-openai-isConsequential: true
+      # No authentication required
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - jobId
+                - language
+              properties:
+                jobId:
+                  type: string
+                  description: "Audio job identifier"
+                  example: "audio_job_12345"
+                language:
+                  type: string
+                  enum: [en, es, hi]
+                  description: "Language to regenerate"
+                  example: "es"
+      responses:
+        "200":
+          description: Language regeneration queued successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "ES audio regeneration has been queued"
+                  jobId:
+                    type: string
+                    example: "audio_job_12345"
+                  language:
+                    type: string
+                    example: "es"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+# ===== AUTHENTICATION & COMPONENTS =====
+
+components:
+  # Authentication disabled for ChatGPT Actions (pre-production)
+  # securitySchemes: {}  # No auth required
+
+  schemas:
+    BlogPost:
+      type: object
+      description: "Complete blog post with content, metadata, and multilingual support"
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "a758cb1f-7144-4fc1-93f7-356aac0fd84f"
+          description: "Unique post identifier"
+        title:
+          type: string
+          example: "The Mystical Dance of Light in Van Gogh's Starry Night"
+          description: "Post title"
+        slug:
+          type: string
+          example: "mystical-dance-light-van-gogh-starry-night"
+          description: "URL-friendly identifier"
+        excerpt:
+          type: string
+          example: "Exploring the mystical elements and artistic techniques..."
+          nullable: true
+          description: "Brief post summary"
+        content:
+          type: string
+          description: "Full post content (Markdown supported)"
+        featured_image_url:
+          type: string
+          format: uri
+          nullable: true
+          description: "Main image URL"
+        status:
+          type: string
+          enum: [draft, published, archived]
+          description: "Publication status"
+        origin_source:
+          type: string
+          enum: [chatgpt, manual, openai, claude, merged, generated, uploaded]
+          description: "Content creation source"
+        created_at:
+          type: string
+          format: date-time
+          description: "Creation timestamp"
+        updated_at:
+          type: string
+          format: date-time
+          description: "Last update timestamp"
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: "Publication timestamp"
+        categories:
+          type: array
+          items:
+            type: string
+          example: ["Art Analysis", "Post-Impressionism"]
+        tags:
+          type: array
+          items:
+            type: string
+          example: ["Van Gogh", "Starry Night", "Art History"]
+        seo_title:
+          type: string
+          nullable: true
+          description: "SEO-optimized title"
+        seo_description:
+          type: string
+          nullable: true
+          description: "SEO meta description"
+        # Multilingual support
+        title_translations:
+          type: object
+          properties:
+            es:
+              type: string
+              description: "Spanish title"
+            hi:
+              type: string
+              description: "Hindi title"
+          nullable: true
+        content_translations:
+          type: object
+          properties:
+            es:
+              type: string
+              description: "Spanish content"
+            hi:
+              type: string
+              description: "Hindi content"
+          nullable: true
+        audio_assets_by_language:
+          type: object
+          properties:
+            en:
+              type: string
+              format: uri
+              description: "English audio URL"
+            es:
+              type: string
+              format: uri
+              description: "Spanish audio URL"
+            hi:
+              type: string
+              format: uri
+              description: "Hindi audio URL"
+          nullable: true
+          description: "Audio narration URLs by language"
+
+    ImageAnalysisResult:
+      type: object
+      description: "AI-powered artwork analysis with blog content generation"
+      properties:
+        success:
+          type: boolean
+        analysis:
+          type: object
+          properties:
+            openai:
+              type: object
+              properties:
+                analysis:
+                  type: string
+                  description: "OpenAI's detailed artwork analysis"
+                suggested_title:
+                  type: string
+                  description: "AI-suggested blog post title"
+                suggested_content:
+                  type: string
+                  description: "AI-generated blog content"
+                key_themes:
+                  type: array
+                  items:
+                    type: string
+                  description: "Identified artistic themes"
+            claude:
+              type: object
+              properties:
+                analysis:
+                  type: string
+                  description: "Claude's artistic interpretation"
+                historical_context:
+                  type: string
+                  description: "Historical and cultural context"
+                technical_analysis:
+                  type: string
+                  description: "Technical artistic analysis"
+        blog_content:
+          type: object
+          properties:
+            title:
+              type: string
+              example: "The Mystical Dance of Light in Van Gogh's Starry Night"
+            content:
+              type: string
+              description: "Ready-to-publish blog content"
+            excerpt:
+              type: string
+              description: "Content summary"
+            suggested_categories:
+              type: array
+              items:
+                type: string
+            suggested_tags:
+              type: array
+              items:
+                type: string
+        metadata:
+          type: object
+          properties:
+            image_url:
+              type: string
+              format: uri
+              description: "Processed image URL for blog post"
+            analysis_timestamp:
+              type: string
+              format: date-time
+            providers_used:
+              type: array
+              items:
+                type: string
+
+    AudioJob:
+      type: object
+      description: "Audio generation job with multilingual support"
+      properties:
+        job_id:
+          type: string
+          example: "audio_job_12345"
+          description: "Unique job identifier"
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+          description: "Current job status"
+        languages:
+          type: array
+          items:
+            type: string
+            enum: [en, es, hi]
+          description: "Languages being processed"
+        audio_urls:
+          type: object
+          properties:
+            en:
+              type: string
+              format: uri
+              description: "English audio download URL"
+            es:
+              type: string
+              format: uri
+              description: "Spanish audio download URL"
+            hi:
+              type: string
+              format: uri
+              description: "Hindi audio download URL"
+          nullable: true
+          description: "Download URLs (available when completed)"
+        subtitle_urls:
+          type: object
+          description: "Generated subtitle files"
+          properties:
+            en:
+              type: object
+              properties:
+                vtt:
+                  type: string
+                  format: uri
+                srt:
+                  type: string
+                  format: uri
+          nullable: true
+        post_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: "Associated blog post ID"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        estimated_completion:
+          type: string
+          format: date-time
+          nullable: true
+        error_message:
+          type: string
+          nullable: true
+          description: "Error details if job failed"
+        settings:
+          type: object
+          description: "Generation settings used"
+          properties:
+            provider:
+              type: string
+              enum: [openai, elevenlabs]
+            voice_id:
+              type: string
+            voice_settings:
+              type: object
+
+    AudioJobStatus:
+      type: object
+      description: "Current status and results of audio job"
+      properties:
+        job_id:
+          type: string
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+        progress:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: "Completion percentage"
+        current_language:
+          type: string
+          enum: [en, es, hi]
+          nullable: true
+          description: "Currently processing language"
+        completed_languages:
+          type: array
+          items:
+            type: string
+          description: "Languages completed successfully"
+        audio_urls:
+          type: object
+          nullable: true
+          description: "Available download URLs"
+        error_message:
+          type: string
+          nullable: true
+        estimated_time_remaining:
+          type: integer
+          nullable: true
+          description: "Estimated seconds until completion"
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 10
+        total:
+          type: integer
+          example: 25
+          description: "Total number of items"
+        totalPages:
+          type: integer
+          example: 3
+          description: "Total number of pages"
+        hasNext:
+          type: boolean
+          description: "Whether there are more pages"
+        hasPrev:
+          type: boolean
+          description: "Whether there are previous pages"
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          description: "Human-readable error message"
+          example: "Invalid request parameters"
+        code:
+          type: string
+          description: "Error code for programmatic handling"
+          example: "VALIDATION_ERROR"
+        details:
+          type: object
+          description: "Additional error context"
+          nullable: true
+
+  responses:
+    Unauthorized:
+      description: "Authentication required or invalid API key"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: "Invalid or missing API key"
+              code:
+                type: string
+                example: "UNAUTHORIZED"
+          example:
+            success: false
+            error: "Authentication required. Please provide a valid API key in the Authorization header."
+            code: "UNAUTHORIZED"
+    
+    BadRequest:
+      description: "Invalid request parameters or malformed data"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          examples:
+            validation_error:
+              summary: "Validation Error"
+              value:
+                success: false
+                error: "Missing required field: title"
+                code: "VALIDATION_ERROR"
+                details:
+                  field: "title"
+                  message: "Title is required and cannot be empty"
+            
+    NotFound:
+      description: "Requested resource not found"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            success: false
+            error: "Blog post not found"
+            code: "NOT_FOUND"
+            
+    ServerError:
+      description: "Internal server error"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            success: false
+            error: "An unexpected error occurred while processing your request"
+            code: "INTERNAL_ERROR"
+

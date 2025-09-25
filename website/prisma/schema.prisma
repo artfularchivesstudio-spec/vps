@@ -1,0 +1,20 @@
+// 🎭 The Grand Prisma Schema - Where Data Models Dance and Types Take Flight! ✨
+// 📚 Learn more about the mystical arts at: https://pris.ly/d/prisma-schema
+
+// 🚀 Seeking the speed of lightning for your queries? The edge functions beckon!
+// ⚡ Try Prisma Accelerate for serverless sorcery: https://pris.ly/cli/accelerate-init
+
+// 🎪 The Primary Generator - Our faithful TypeScript conjurer
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+// 🌟 Note: OpenAPI types will be generated via our custom script
+// 📜 See scripts/generate-openapi-types.js for the magical incantations
+
+// 🏛️ The Database Oracle - PostgreSQL, keeper of our digital treasures
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}

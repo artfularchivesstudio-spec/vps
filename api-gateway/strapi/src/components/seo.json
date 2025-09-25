@@ -1,0 +1,69 @@
+{
+  "kind": "component",
+  "componentName": "seo",
+  "info": {
+    "displayName": "SEO",
+    "description": "Search engine optimization metadata"
+  },
+  "schema": {
+    "type": "object",
+    "properties": {
+      "metaTitle": {
+        "type": "string",
+        "required": false,
+        "maxLength": 60,
+        "default": "",
+        "description": "SEO title (recommended: 50-60 characters)"
+      },
+      "metaDescription": {
+        "type": "text",
+        "required": false,
+        "maxLength": 160,
+        "default": "",
+        "description": "SEO description (recommended: 150-160 characters)"
+      },
+      "shareImage": {
+        "type": "media",
+        "multiple": false,
+        "required": false,
+        "allowedTypes": [
+          "images"
+        ],
+        "description": "Social media sharing image (recommended: 1200x630px)"
+      },
+      "keywords": {
+        "type": "string",
+        "required": false,
+        "maxLength": 200,
+        "default": "",
+        "description": "Comma-separated keywords for SEO"
+      },
+      "canonicalURL": {
+        "type": "string",
+        "required": false,
+        "maxLength": 2000,
+        "regex": "^(https?:\\/\\/)?([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?$",
+        "default": "",
+        "description": "Canonical URL for this content"
+      },
+      "noIndex": {
+        "type": "boolean",
+        "required": false,
+        "default": false,
+        "description": "Prevent search engines from indexing this page"
+      },
+      "noFollow": {
+        "type": "boolean",
+        "required": false,
+        "default": false,
+        "description": "Prevent search engines from following links on this page"
+      },
+      "structuredData": {
+        "type": "json",
+        "required": false,
+        "default": {},
+        "description": "JSON-LD structured data for rich snippets"
+      }
+    }
+  }
+}

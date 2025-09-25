@@ -1,0 +1,627 @@
+
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Artful Archives Studio API",
+    "description": "AI-powered blog creation system with multilingual audio narration and rich media support",
+    "version": "1.6.0",
+    "contact": {
+      "name": "Artful Archives Studio",
+      "url": "https://artfularchivesstudio.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://tjkpliasdjpgunbhsiza.functions.supabase.co",
+      "description": "Direct Supabase Functions API"
+    }
+  ],
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/functions/v1/posts-simple": {
+      "get": {
+        "summary": "List blog posts",
+        "description": "Retrieve a paginated list of blog posts with optional filters",
+        "operationId": "listPosts",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of posts to return (max 100)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filter posts by status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "published",
+                "archived"
+              ]
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search in title, content, and excerpt",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "author",
+            "in": "query",
+            "description": "Filter by author (created_by UUID)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "description": "Field to order by (default created_at)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "created_at"
+            }
+          },
+          {
+            "name": "order_direction",
+            "in": "query",
+            "description": "Sort direction",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "desc"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved posts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "posts": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/BlogPost"
+                          }
+                        },
+                        "pagination": {
+                          "$ref": "#/components/schemas/Pagination"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/functions/v1/ai-generate-audio-simple": {
+      "post": {
+        "summary": "Generate audio from text",
+        "description": "Generate high-quality audio narration from text using OpenAI TTS. Uses alloy voice as default with automatic onyx blocking.",
+        "tags": [
+          "AI"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateAudioRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Generated audio",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateAudioResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/functions/v1/ai-analyze-image": {
+      "post": {
+        "summary": "Analyze artwork with AI",
+        "description": "Analyze artwork images using OpenAI GPT-4 and Claude Sonnet. Returns detailed analysis suitable for blog post content.",
+        "tags": [
+          "AI"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnalyzeImageRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Analysis result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyzeImageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/functions/v1/generate-blog-content": {
+      "post": {
+        "summary": "Generate blog content",
+        "description": "Generate complete blog post content with title, content, SEO fields, and categories/tags using AI.",
+        "tags": [
+          "AI"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateBlogContentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Generated blog content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateBlogContentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "API Key"
+      }
+    },
+    "schemas": {
+      "BlogPost": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "excerpt": {
+            "type": "string",
+            "nullable": true
+          },
+          "featured_image_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "seo_title": {
+            "type": "string",
+            "nullable": true
+          },
+          "seo_description": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published",
+              "archived"
+            ]
+          },
+          "origin_source": {
+            "type": "string",
+            "enum": [
+              "manual",
+              "openai",
+              "claude",
+              "merged",
+              "generated",
+              "uploaded"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "published_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "primary_audio_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "created_by": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "last_edited_by": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "ai_analysis_openai": {
+            "type": "string",
+            "nullable": true
+          },
+          "ai_analysis_claude": {
+            "type": "string",
+            "nullable": true
+          },
+          "selected_ai_provider": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "Pagination": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "totalPages": {
+            "type": "integer"
+          },
+          "hasNext": {
+            "type": "boolean"
+          },
+          "hasPrev": {
+            "type": "boolean"
+          }
+        }
+      },
+      "GenerateAudioRequest": {
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Text to convert to speech",
+            "minLength": 1,
+            "maxLength": 5000
+          },
+          "voice_id": {
+            "type": "string",
+            "description": "Voice ID to use",
+            "default": "alloy"
+          },
+          "provider": {
+            "type": "string",
+            "enum": [
+              "openai"
+            ],
+            "default": "openai",
+            "description": "TTS provider (OpenAI only)"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "es",
+              "hi"
+            ],
+            "default": "en",
+            "description": "Language for the audio"
+          },
+          "speed": {
+            "type": "number",
+            "minimum": 0.25,
+            "maximum": 4.0,
+            "default": 1.0,
+            "description": "Speed of the audio (0.25-4.0)"
+          }
+        }
+      },
+      "GenerateAudioResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "provider": {
+                "type": "string"
+              },
+              "voice_id": {
+                "type": "string"
+              },
+              "text_length": {
+                "type": "integer"
+              },
+              "audio_size_bytes": {
+                "type": "integer"
+              },
+              "estimated_duration_seconds": {
+                "type": "number"
+              },
+              "format": {
+                "type": "string"
+              },
+              "generation_metadata": {
+                "type": "object"
+              },
+              "generated_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "audio_data": {
+                "type": "string",
+                "description": "Base64 encoded audio (if not saved to storage)"
+              },
+              "storage": {
+                "type": "object",
+                "description": "Storage information (if saved)",
+                "properties": {
+                  "saved": {
+                    "type": "boolean"
+                  },
+                  "media_asset_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "file_url": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "file_name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "AnalyzeImageRequest": {
+        "type": "object",
+        "required": [
+          "image_data"
+        ],
+        "properties": {
+          "image_data": {
+            "type": "string",
+            "description": "Base64 encoded image data"
+          },
+          "mime_type": {
+            "type": "string",
+            "description": "Image MIME type"
+          },
+          "analysis_type": {
+            "type": "string",
+            "enum": [
+              "detailed",
+              "brief",
+              "technical",
+              "artistic",
+              "social_media"
+            ],
+            "default": "detailed",
+            "description": "Type of analysis"
+          },
+          "include_metadata": {
+            "type": "boolean",
+            "default": false,
+            "description": "Include image metadata"
+          },
+          "custom_prompt": {
+            "type": "string",
+            "maxLength": 1000,
+            "description": "Custom analysis prompt"
+          }
+        }
+      },
+      "AnalyzeImageResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "analysis_type": {
+                "type": "string"
+              },
+              "providers_used": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "timestamp": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "openai": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string"
+                  },
+                  "success": {
+                    "type": "boolean"
+                  },
+                  "error": {
+                    "type": "string"
+                  }
+                }
+              },
+              "claude": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string"
+                  },
+                  "success": {
+                    "type": "boolean"
+                  },
+                  "error": {
+                    "type": "string"
+                  }
+                }
+              },
+              "suggested_title": {
+                "type": "string"
+              },
+              "suggested_slug": {
+                "type": "string"
+              },
+              "image_metadata": {
+                "type": "object",
+                "properties": {
+                  "mime_type": {
+                    "type": "string"
+                  },
+                  "size_estimate": {
+                    "type": "integer"
+                  },
+                  "analysis_timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            }
+          }
+        }
+    }
+  }
+  }
+}

@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  strapi:
+    build:
+      context: ./api-gateway/strapi
+      dockerfile: Dockerfile
+    ports:
+      - "1337:1337"
+    volumes:
+      - ./api-gateway/strapi:/app
+    networks:
+      - strapi-net
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./api-gateway:/app
+    environment:
+      STRAPI_URL: http://strapi:1337
+    networks:
+      - strapi-net
+
+networks:
+  strapi-net:
+    driver: bridge

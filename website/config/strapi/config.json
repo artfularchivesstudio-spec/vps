@@ -1,0 +1,76 @@
+{
+  "server": {
+    "host": "0.0.0.0",
+    "port": 1337,
+    "url": "http://localhost:1337"
+  },
+  "database": {
+    "connection": {
+      "client": "postgres",
+      "connection": {
+        "host": "localhost",
+        "port": 5432,
+        "database": "artful_archives",
+        "user": "postgres",
+        "password": "${DATABASE_PASSWORD}",
+        "ssl": {
+          "rejectUnauthorized": false
+        }
+      },
+      "pool": {
+        "min": 2,
+        "max": 10
+      }
+    }
+  },
+  "admin": {
+    "autoReload": {
+      "enabled": true,
+      "builds": {
+        "watch": {
+          "patterns": ["src/**/*"]
+        }
+      }
+    }
+  },
+  "upload": {
+    "provider": "local",
+    "providerOptions": {
+      "sizeLimit": 10485760
+    }
+  },
+  "i18n": {
+    "defaultLocale": "en",
+    "locales": ["en", "es", "hi"],
+    "settings": {
+      "forceLocale": false,
+      "saveEmptyLocales": false
+    }
+  },
+  "api": {
+    "blog_post": {
+      "config": {
+        "find": {
+          "cache": false
+        }
+      }
+    }
+  },
+  "plugins": {
+    "i18n": {
+      "locales": ["en", "es", "hi"]
+    },
+    "upload": {
+      "config": {
+        "provider": "local",
+        "sizeLimit": 10485760
+      }
+    },
+    "graphql": {
+      "enabled": true,
+      "admin": {
+        "playground": true
+      }
+    }
+  }
+}

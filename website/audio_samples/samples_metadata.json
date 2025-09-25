@@ -1,0 +1,78 @@
+{
+  "download_timestamp": 1757375105.07862,
+  "total_jobs": 3,
+  "downloaded_files": [
+    "audio_samples/19587fa4-1fbf-4e4e-adbb-8bd9772aab9e_en_full.mp3",
+    "audio_samples/19587fa4-1fbf-4e4e-adbb-8bd9772aab9e_es_full.mp3",
+    "audio_samples/19587fa4-1fbf-4e4e-adbb-8bd9772aab9e_hi_full.mp3",
+    "audio_samples/78446eca-0a40-477a-bb46-6a0bcd22f54c_en_full.mp3",
+    "audio_samples/06b82937-a59c-4d9b-aa71-0c9d661a296f_en_full.mp3"
+  ],
+  "jobs_info": [
+    {
+      "id": "19587fa4-1fbf-4e4e-adbb-8bd9772aab9e",
+      "languages": [
+        "en",
+        "es",
+        "hi"
+      ],
+      "completed_languages": [
+        "en",
+        "es",
+        "hi"
+      ],
+      "source_language": "en",
+      "audio_files": {
+        "en": {
+          "filename": "19587fa4-1fbf-4e4e-adbb-8bd9772aab9e_en_full.mp3",
+          "size": 3004320,
+          "claimed_language": "en"
+        },
+        "es": {
+          "filename": "19587fa4-1fbf-4e4e-adbb-8bd9772aab9e_es_full.mp3",
+          "size": 3016800,
+          "claimed_language": "es"
+        },
+        "hi": {
+          "filename": "19587fa4-1fbf-4e4e-adbb-8bd9772aab9e_hi_full.mp3",
+          "size": 3039840,
+          "claimed_language": "hi"
+        }
+      }
+    },
+    {
+      "id": "78446eca-0a40-477a-bb46-6a0bcd22f54c",
+      "languages": [
+        "en"
+      ],
+      "completed_languages": [
+        "en"
+      ],
+      "source_language": "en",
+      "audio_files": {
+        "en": {
+          "filename": "78446eca-0a40-477a-bb46-6a0bcd22f54c_en_full.mp3",
+          "size": 2340960,
+          "claimed_language": "en"
+        }
+      }
+    },
+    {
+      "id": "06b82937-a59c-4d9b-aa71-0c9d661a296f",
+      "languages": [
+        "en"
+      ],
+      "completed_languages": [
+        "en"
+      ],
+      "source_language": "en",
+      "audio_files": {
+        "en": {
+          "filename": "06b82937-a59c-4d9b-aa71-0c9d661a296f_en_full.mp3",
+          "size": 1987200,
+          "claimed_language": "en"
+        }
+      }
+    }
+  ]
+}

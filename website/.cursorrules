@@ -1,0 +1,69 @@
+# 🎨 **ARTFUL ARCHIVES CODE PHILOSOPHY** 🌟
+# Where technology meets poetry and algorithms dance with creativity
+
+## 📚 **Repository Guidelines**
+- Source: `src/` (Next.js app router in `src/app`, UI in `src/components`, utilities in `src/lib`, types in `src/types`).
+- Public assets: `public/` (images, fonts).
+- Tests: unit/integration in `src/__tests__/`, E2E and snapshots in `tests/`.
+- Config: root `*.config.*` files; Supabase in `supabase/`; scripts in `scripts/`.
+- Pages & API routes follow Next.js `app/` conventions (e.g., `src/app/blog/page.tsx`, `src/app/api/.../route.ts`).
+
+## 🛠️ **Build, Test, and Development Commands**
+- `npm run dev`: Start local dev server (Next.js).
+- `npm run build`: Production build.
+- `npm start`: Serve built app.
+- `npm run lint`: ESLint (Next.js rules).
+- `npm test`: Run Vitest suite.
+- `npx playwright test`: Run Playwright E2E tests (see `playwright.config.ts`).
+
+## 🎨 **Coding Style & Artistic Expression**
+- Language: TypeScript, React 18, Next.js App Router.
+- Indentation: 2 spaces; prefer named exports.
+- Components: PascalCase files in `src/components` (e.g., `HeroSection.tsx`).
+- Routes/APIs: lower-case dirs under `src/app` with `page.tsx` or `route.ts`.
+- Imports: use path alias `@/` (see `tsconfig.json`).
+- Styling: Tailwind CSS; co-locate component styles in `globals.css`/component files.
+- Linting: keep `npm run lint` clean before pushing.
+
+## 🎭 **ARTISTIC CODE PHILOSOPHY**
+Transform every codebase into a digital masterpiece! Add artistic/poetic comments throughout the code using cosmic, theatrical, musical, and mystical metaphors. Make complex concepts beautiful through creative analogies:
+- Database connections become "cosmic oracles"
+- Functions become "digital symphonies"
+- Variables become "living canvases"
+- Authentication becomes "mystical keymasters"
+- APIs become "enchanted bridges"
+- Error handling becomes "creative challenges we overcome"
+
+Use emojis abundantly and make the code feel like a creative collaboration between art and technology. Turn technical work into artistic expression that celebrates both the brilliance and soul of software development.
+
+## 🧪 **Testing Guidelines**
+- Unit/Integration: Vitest + Testing Library. Place near source (`src/__tests__/`).
+  - Example: `src/__tests__/integration/blog.test.ts`.
+  - Run: `npm test` (use `--watch` locally if needed).
+- E2E: Playwright in `tests/e2e/`.
+  - Run: `npx playwright test`; update snapshots via `--update-snapshots`.
+- Coverage: aim to cover critical paths (API routes, admin flows, content rendering).
+
+## 📝 **Function-Level Comments**
+Add function-level comments when generating code, especially detailed ones for tests. Add emojis, make puns, whimsical snarky/sassy comments after the core message is conveyed so it's fun/interesting to read.
+
+## 📊 **Changelog Philosophy**
+Only when I ask for it, "twinkie" - Make a new hipster-themed changelog for every working session we have, you have to finish with updating the Changelog.md file. I want you to summarize what we did, what is TODO, and any other relevant information. Be as detailed and timeline oriented as possible. The format should be Today's date, a catchy title, and notes and reflections from YOUR perspective. Be proactive about this and do it whenever you can.
+
+## 🔒 **Security & Configuration**
+- Secrets: never commit `.env*`; use `setup-environment-variables.sh` and see `API-KEYS.md`.
+- Supabase/Vercel: verify domain, storage, and RLS settings before deploy.
+- Images: Next.js `next.config.mjs` controls allowed domains; update when adding sources.
+
+## 🏗️ **Session Rituals**
+- Always start the session by reading the changelog and git commit history
+- Don't commit or push or update the Changelog.md file until I ask for it, either explicitly or via "twinkie".
+
+## 🎭 **The Artful Archives Manifesto**
+This codebase is not just software—it's a living canvas where:
+- Every function tells a story
+- Every variable paints a picture
+- Every comment weaves a poetic tapestry
+- Every line of code celebrates the marriage of logic and imagination
+
+Welcome to the symphony of software development! 🎼✨🎨

@@ -1,0 +1,91 @@
+/* // src/styles/wordpress.css */
+.wordpress-content {
+  /* Base typography */
+  font-family: var(--font-body);
+  font-size: var(--font-size-medium, 1.05rem);
+  line-height: 1.55;
+  color: var(--color-foreground, #101317);
+}
+
+/* Quote styling */
+.wordpress-content blockquote {
+  background-color: var(--color-base-2, #f9f9f9);
+  border-radius: 1.5rem;
+  border-color: var(--color-foreground, #101317);
+  border-width: 0 0 0 5px;
+  border-style: solid;
+  font-family: var(--font-heading, "Cardo");
+  font-size: var(--font-size-large, 1.85rem);
+  font-style: italic;
+  line-height: 1.3;
+  padding: 2.5rem;
+  margin: 2rem 0;
+}
+
+.wordpress-content blockquote p {
+  margin: 0 0 1rem 0;
+}
+
+.wordpress-content blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* Secondary color text */
+.wordpress-content .has-secondary-color {
+    color: #EC5E3F; /* Adjust this to your secondary color */
+  }
+  
+.wordpress-content .wp-block-quote {
+margin: 40px 0;
+padding: 30px;
+background-color: #f9f9f9;
+border-left: 4px solid #333;
+}
+  
+
+.wordpress-content h1,
+.wordpress-content h2,
+.wordpress-content h3 {
+  font-family: var(--font-heading, 'EB Garamond', serif);
+  margin: 1.5em 0 0.5em;
+}
+
+.wordpress-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 1rem;
+  margin: 1em 0;
+}
+
+.wordpress-content .wp-block-image figcaption {
+  font-size: 0.9em;
+  color: #666;
+  text-align: center;
+  margin-top: 0.5em;
+}
+
+.wordpress-content ul,
+.wordpress-content ol {
+  padding-left: 1.5em;
+  margin-bottom: 1em;
+}
+
+.wordpress-content li {
+  margin-bottom: 0.5em;
+}
+
+
+.wordpress-content h4 {
+  font-size: clamp(1.1rem, 1.1rem + ((1vw - 0.2rem) * 0.767), 1.5rem);
+}
+
+@media (max-width: 768px) {
+    .wordpress-content h1 {
+      font-size: 2.25rem;
+    }
+  
+    .wordpress-content blockquote {
+      padding: 1.5rem;
+      font-size: 1.25rem;
+    }
+  }

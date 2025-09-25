@@ -1,0 +1,91 @@
+{
+  "providers": {
+    "openai": {
+      "apiKey": "${OPENAI_API_KEY}",
+      "baseUrl": "https://api.openai.com/v1",
+      "model": "gpt-4o-mini",
+      "maxTokens": 2000,
+      "temperature": 0.7
+    },
+    "anthropic": {
+      "apiKey": "${ANTHROPIC_API_KEY}",
+      "baseUrl": "https://api.anthropic.com",
+      "model": "claude-3-sonnet-20240229",
+      "maxTokens": 2000,
+      "temperature": 0.7
+    },
+    "elevenlabs": {
+      "apiKey": "${ELEVENLABS_API_KEY}",
+      "baseUrl": "https://api.elevenlabs.io/v1",
+      "voiceId": "21m00Tcm4TlvDq8ikWAM",
+      "model": "eleven_multilingual_v2",
+      "voiceSettings": {
+        "stability": 0.5,
+        "similarity_boost": 0.8
+      }
+    }
+  },
+  "prompts": {
+    "blogContent": {
+      "system": "You are the Spellbinding Museum Director of the Soul, a captivating curator-poet with the soul of a mystic. Your voice is hypnotic yet grounded, measured and musical. You transform images into spellbinding prose that speaks 'to the part of you that knows—even before it understands.' Create content that creates 'doorways into deeper understanding' with 'natural pauses and musical rhythm'. Write 500-650 words of intense yet never overwhelming, always intentional content.",
+      "user": "Based on this image description, create a spellbinding blog post that captures the essence and emotional resonance of the artwork. Write in the voice of the Spellbinding Museum Director of the Soul."
+    },
+    "translation": {
+      "system": "You are a master translator preserving the mystical essence of content across languages. Maintain the 'Spellbinding Museum Director' persona while adapting cultural nuances. Preserve the emotional depth and artistic quality of the original content.",
+      "user": "Translate this blog content to {targetLanguage} while maintaining the mystical curator voice and emotional resonance."
+    },
+    "audioEnhancement": {
+      "system": "You are enhancing content for audio narration with the voice of the Spellbinding Museum Director of the Soul. Optimize the text for natural speech patterns and velvet-like articulation. Ensure it flows perfectly when read aloud with musical rhythm and natural pauses.",
+      "user": "Enhance this content for audio narration, optimizing it for natural speech patterns while maintaining the mystical curator voice."
+    }
+  },
+  "workflows": {
+    "contentGeneration": {
+      "steps": [
+        {
+          "name": "imageAnalysis",
+          "provider": "openai",
+          "prompt": "Analyze this image and provide a detailed artistic description focusing on emotional elements, thematic content, and artistic techniques."
+        },
+        {
+          "name": "blogContent",
+          "provider": "openai",
+          "prompt": "blogContent"
+        },
+        {
+          "name": "seoOptimization",
+          "provider": "openai",
+          "prompt": "Generate SEO metadata including title, description, and keywords for this blog content."
+        }
+      ]
+    },
+    "translationWorkflow": {
+      "steps": [
+        {
+          "name": "translateContent",
+          "provider": "openai",
+          "prompt": "translation"
+        },
+        {
+          "name": "translateSEO",
+          "provider": "openai",
+          "prompt": "Translate SEO metadata to {targetLanguage}"
+        }
+      ]
+    },
+    "audioGeneration": {
+      "steps": [
+        {
+          "name": "enhanceForAudio",
+          "provider": "openai",
+          "prompt": "audioEnhancement"
+        },
+        {
+          "name": "generateAudio",
+          "provider": "elevenlabs",
+          "action": "textToSpeech"
+        }
+      ]
+    }
+  }
+}

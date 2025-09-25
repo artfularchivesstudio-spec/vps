@@ -1,0 +1,166 @@
+{
+  "kind": "collectionType",
+  "collectionName": "blog_posts",
+  "info": {
+    "singularName": "blog-post",
+    "pluralName": "blog-posts",
+    "displayName": "Blog Post",
+    "description": "Blog posts with AI-powered content generation and multilingual support"
+  },
+  "options": {
+    "draftAndPublish": false,
+    "timestamps": true
+  },
+  "pluginOptions": {
+    "content-type-builder": {
+      "visible": true
+    },
+    "users-permissions": {
+      "visible": true
+    }
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "unique": false
+    },
+    "slug": {
+      "type": "uid",
+      "required": true,
+      "unique": true,
+      "targetField": "title"
+    },
+    "excerpt": {
+      "type": "text",
+      "required": false,
+      "maxLength": 300
+    },
+    "content": {
+      "type": "richtext",
+      "required": false
+    },
+    "featuredImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ],
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "gallery": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ],
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "audioFile": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "files",
+        "videos"
+      ],
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "audioFilesByLanguage": {
+      "type": "component",
+      "repeatable": true,
+      "component": "audio.audio-files-by-language",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "categories": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::category.category",
+      "inversedBy": "blog_posts"
+    },
+    "tags": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::tag.tag",
+      "inversedBy": "blog_posts"
+    },
+    "author": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "seo.seo",
+      "required": false,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "aiGenerated": {
+      "type": "boolean",
+      "default": false,
+      "required": false
+    },
+    "aiPrompt": {
+      "type": "text",
+      "required": false,
+      "maxLength": 1000,
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "aiProvider": {
+      "type": "enumeration",
+      "enum": [
+        "openai",
+        "anthropic",
+        "elevenlabs"
+      ],
+      "default": "openai",
+      "required": false
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "draft",
+        "published",
+        "archived"
+      ],
+      "default": "draft",
+      "required": false
+    },
+    "publishedAt": {
+      "type": "datetime",
+      "required": false
+    },
+    "wordpressId": {
+      "type": "biginteger",
+      "required": false,
+      "unique": true
+    }
+  }
+}

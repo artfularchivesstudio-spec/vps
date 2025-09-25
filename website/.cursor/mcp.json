@@ -1,0 +1,184 @@
+{
+  "mcpServers": {
+    "console-ninja": {
+      "command": "node"
+    },
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp"
+      ],
+      "disabled": false,
+      "alwaysAllow": [],
+      "disabledTools": []
+    },
+    "browsermcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@browsermcp/mcp@latest"
+      ],
+      "disabled": false,
+      "alwaysAllow": [
+        "browser_navigate",
+        "browser_go_back",
+        "browser_go_forward",
+        "browser_snapshot",
+        "browser_click",
+        "browser_hover",
+        "browser_type",
+        "browser_select_option",
+        "browser_press_key",
+        "browser_wait",
+        "browser_get_console_logs",
+        "browser_screenshot"
+      ],
+      "disabledTools": []
+    },
+    "github": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "-e",
+        "GITHUB_TOOLSETS",
+        "-e",
+        "GITHUB_READ_ONLY",
+        "ghcr.io/github/github-mcp-server"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": " 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 ",
+        "GITHUB_TOOLSETS": "",
+        "GITHUB_READ_ONLY": ""
+      }
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/"
+      ]
+    },
+    "sequentialthinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
+    },
+    "puppeteer": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-puppeteer"
+      ]
+    },
+    "time": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-time"
+      ]
+    },
+    "memory": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ]
+    },
+    "youtube": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@anaisbetts/mcp-installer",
+        "@anaisbetts/mcp-youtube"
+      ]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@latest",
+        "--browser=",
+        "--headless=false",
+        "--viewport-size="
+      ]
+    },
+    "git": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-git",
+        "--repository",
+        "./"
+      ]
+    },
+    "qdrant": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-qdrant"
+      ],
+      "env": {
+        "QDRANT_URL": "https://8bc08ca0-8a7c-475b-b55c-921a5f83b4c2.us-west-2-0.aws.cloud.qdrant.io",
+        "QDRANT_API_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.LDhDemceTLWap5M0HbJIXrrlJ5BQJGZctr_umswTGyA",
+        "COLLECTION_NAME": "artful_archives",
+        "EMBEDDING_MODEL": ""
+      }
+    },
+    "postgrest": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-postgrest@latest",
+        "--apiUrl",
+        "https://tjkpliasdjgpunbhsiza.supabase.co/rest/v1",
+        "--apiKey",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRqa3BsaWFzZGpwZ3VuYmhzaXphIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTc3NDUwMywiZXhwIjoyMDY3MzUwNTAzfQ.S426_9YxbKZCKFqPu9Q9zlefr7TkfqPuWFjnScQUu50",
+        "--schema",
+        "public"
+      ]
+    },
+    "supabase_artful_archives_studio": {
+      "transport_type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-postgrest@latest",
+        "--apiUrl",
+        "https://tjkpliasdjpgunbhsiza.supabase.co/rest/v1",
+        "--apiKey",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRqa3BsaWFzZGpwZ3VuYmhzaXphIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTc3NDUwMywiZXhwIjoyMDY3MzUwNTAzfQ.S426_9YxbKZCKFqPu9Q9zlefr7TkfqPuWFjnScQUu50",
+        "--schema",
+        "public"
+      ],
+      "alwaysAllow": [
+        "postgrestRequest",
+        "sqlToRest"
+      ],
+      "disabledTools": []
+    }
+  },
+  "google-sheets": {
+    "command": "node",
+    "args": [
+      "scripts/google-sheets-mcp-server.js"
+    ],
+    "disabled": false,
+    "alwaysAllow": [
+      "sheets_create",
+      "sheets_read",
+      "sheets_write",
+      "sheets_append",
+      "sheets_get_metadata",
+      "sheets_create_sheet",
+      "sheets_delete_sheet",
+      "sheets_clear_range",
+      "sheets_batch_update"
+    ],
+    "disabledTools": []
+  }
+}

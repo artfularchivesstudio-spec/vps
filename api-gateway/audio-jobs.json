@@ -1,0 +1,79 @@
+[
+  {
+    "id": "aj-001",
+    "created_at": "2024-07-11T16:10:00+00:00",
+    "blog_post_id": 1,
+    "language": "en",
+    "voice_id": "v-eng-f-01",
+    "ai_provider": "elevenlabs",
+    "status": "completed",
+    "audio_url": "https://example.com/audio/schrodingers-cat-en.mp3",
+    "duration_seconds": 185
+  },
+  {
+    "id": "aj-002",
+    "created_at": "2024-07-11T16:12:00+00:00",
+    "blog_post_id": 1,
+    "language": "es",
+    "voice_id": "v-esp-m-01",
+    "ai_provider": "elevenlabs",
+    "status": "completed",
+    "audio_url": "https://example.com/audio/schrodingers-cat-es.mp3",
+    "duration_seconds": 195
+  },
+  {
+    "id": "aj-003",
+    "created_at": "2024-07-12T11:25:00+00:00",
+    "blog_post_id": 2,
+    "language": "en",
+    "voice_id": "v-eng-m-02",
+    "ai_provider": "openai",
+    "status": "completed",
+    "audio_url": "https://example.com/audio/dark-matter-en.mp3",
+    "duration_seconds": 210
+  },
+  {
+    "id": "aj-004",
+    "created_at": "2024-07-13T09:50:00+00:00",
+    "blog_post_id": 3,
+    "language": "en",
+    "voice_id": "v-eng-f-03",
+    "ai_provider": "anthropic",
+    "status": "processing",
+    "audio_url": null,
+    "duration_seconds": null
+  },
+  {
+    "id": "aj-005",
+    "created_at": "2024-07-14T14:10:00+00:00",
+    "blog_post_id": 4,
+    "language": "en",
+    "voice_id": "v-eng-m-01",
+    "ai_provider": "elevenlabs",
+    "status": "completed",
+    "audio_url": "https://example.com/audio/black-holes-en.mp3",
+    "duration_seconds": 220
+  },
+  {
+    "id": "aj-006",
+    "created_at": "2024-07-15T18:35:00+00:00",
+    "blog_post_id": 5,
+    "language": "en",
+    "voice_id": "v-eng-f-02",
+    "ai_provider": "openai",
+    "status": "completed",
+    "audio_url": "https://example.com/audio/history-of-ai-en.mp3",
+    "duration_seconds": 240
+  },
+  {
+    "id": "aj-007",
+    "created_at": "2024-07-15T18:36:00+00:00",
+    "blog_post_id": 5,
+    "language": "fr",
+    "voice_id": "v-fra-f-01",
+    "ai_provider": "elevenlabs",
+    "status": "failed",
+    "audio_url": null,
+    "duration_seconds": null
+  }
+]

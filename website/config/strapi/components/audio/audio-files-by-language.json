@@ -1,0 +1,52 @@
+{
+  "kind": "component",
+  "componentName": "audio-files-by-language",
+  "info": {
+    "displayName": "Audio Files by Language",
+    "description": "Audio files organized by language for multilingual content"
+  },
+  "attributes": {
+    "language": {
+      "type": "enumeration",
+      "enum": [
+        "en",
+        "es", 
+        "hi"
+      ],
+      "required": true,
+      "default": "en"
+    },
+    "audioFile": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "files",
+        "videos"
+      ]
+    },
+    "audioUrl": {
+      "type": "string",
+      "required": false
+    },
+    "voice": {
+      "type": "string",
+      "required": false,
+      "maxLength": 100
+    },
+    "duration": {
+      "type": "integer",
+      "required": false
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "processing",
+        "completed",
+        "failed"
+      ],
+      "default": "processing",
+      "required": false
+    }
+  }
+}

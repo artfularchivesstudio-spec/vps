@@ -1,0 +1,91 @@
+{
+  "mcpServers": {
+    "supabase_artful_archives_studio": {
+      "transport_type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-postgrest@latest",
+        "--apiUrl",
+        "https://tjkpliasdjpgunbhsiza.supabase.co/rest/v1",
+        "--apiKey",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRqa3BsaWFzZGpwZ3VuYmhzaXphIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTc3NDUwMywiZXhwIjoyMDY3MzUwNTAzfQ.S426_9YxbKZCKFqPu9Q9zlefr7TkfqPuWFjnScQUu50",
+        "--schema",
+        "public"
+      ],
+      "alwaysAllow": [
+        "postgrestRequest",
+        "sqlToRest"
+      ],
+      "disabledTools": []
+    },
+    "github": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "-e",
+        "GITHUB_TOOLSETS",
+        "-e",
+        "GITHUB_READ_ONLY",
+        "ghcr.io/github/github-mcp-server"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "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",
+        "GITHUB_TOOLSETS": "",
+        "GITHUB_READ_ONLY": ""
+      }
+    },
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp"
+      ],
+      "env": {
+        "DEFAULT_MINIMUM_TOKENS": ""
+      },
+      "alwaysAllow": [
+        "get-library-docs"
+      ]
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/"
+      ],
+      "disabled": true,
+      "alwaysAllow": []
+    },
+    "sequentialthinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
+    },
+    "time": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-time"
+      ]
+    },
+    "qdrant": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-qdrant"
+      ],
+      "env": {
+        "QDRANT_URL": "https://8bc08ca0-8a7c-475b-b55c-921a5f83b4c2.us-west-2-0.aws.cloud.qdrant.io:6333",
+        "QDRANT_API_KEY": "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",
+        "COLLECTION_NAME": "hostinger-vps",
+        "EMBEDDING_MODEL": ""
+      }
+    }
+  }
+}

@@ -147,3 +147,10 @@ website/.git/
 
 # 📋 **Codex & Session Files**
 .codex/
+
+# 🔐 **API Keys & Tokens**
+*strapi*token*.txt
+*strapi*api*.txt
+strapi-admin-credentials.txt
+*.key
+*.pem
